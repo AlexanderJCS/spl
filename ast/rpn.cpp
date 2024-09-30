@@ -6,8 +6,10 @@
 #include <utility>
 #include <stack>
 
+
 ShuntingYardParser::ShuntingYardParser(std::vector<token::Token> input)
     : tokens(std::move(input)), astRoot(parse()) {}
+
 
 node::ASTNode ShuntingYardParser::parse() const {
     std::stack<token::Token> operatorStack;
@@ -70,9 +72,11 @@ node::ASTNode ShuntingYardParser::parse() const {
     return operandStack.top();
 }
 
+
 const node::ASTNode &ShuntingYardParser::root() const {
     return astRoot;
 }
+
 
 void ShuntingYardParser::addNode(std::stack<node::ASTNode> &operandStack, const token::Token &token) {
     if (token.type() == token::TokenType::IDENTIFIER || token.type() == token::TokenType::LITERAL_INT) {

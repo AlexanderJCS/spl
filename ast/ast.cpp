@@ -22,3 +22,7 @@ node::ASTNode::ASTNode() : nodeType(), lineAt(-1), columnAt(-1) {}
 
 node::ASTNode::ASTNode(NodeType type, token::Token token, std::vector<ASTNode> children)
     : nodeType(type), nodeToken(std::move(token)), nodeChildren(std::move(children)), lineAt(-1), columnAt(-1) {}
+
+std::vector<node::ASTNode> &node::ASTNode::childrenRef() {
+    return nodeChildren;
+}

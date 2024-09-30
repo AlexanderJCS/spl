@@ -1,7 +1,10 @@
 #include <iostream>
+#include <functional>
 
 #include "token/tokenizer.h"
 #include "ast/rpn.h"
+
+#include "ast/parser.h"
 
 int main() {
     token::Tokenizer token{"int a = 5;"};
@@ -10,9 +13,9 @@ int main() {
         std::cout << "Token value: " << t.value() << " Token type: " << static_cast<int>(t.type()) << std::endl;
     }
 
-    ShuntingYardParser parser{token.getTokens()};
+    Parser parser{token.getTokens()};
 
-    std::cout << "finished" << std::endl;
+    std::cout << "Root node children size: " << parser.root().children().size() << std::endl;
 
     return 0;
 }

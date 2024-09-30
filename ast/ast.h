@@ -18,6 +18,12 @@ namespace node {
         [[nodiscard]] const token::Token& token() const;
         [[nodiscard]] const std::vector<ASTNode>& children() const;
 
+        /**
+         * TODO: this is a hack. I feel like this class should be immutable but this saves time for the moment.
+         * @return The children of this node.
+         */
+        [[nodiscard]] std::vector<ASTNode>& childrenRef();
+
         [[nodiscard]] int line() const;
         [[nodiscard]] int column() const;
 

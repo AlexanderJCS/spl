@@ -12,12 +12,13 @@ public:
 
 private:
     node::ASTNode parse();
-    bool atEnd();
-    token::Token currentToken();
+    [[nodiscard]] bool atEnd() const;
+    [[nodiscard]] token::Token currentToken() const;
     token::Token advance();
     node::ASTNode parseStatement();
     node::ASTNode parseDeclaration();
     node::ASTNode parseExpression();
+    void expect(token::TokenType type);
 
     node::ASTNode astRoot;
     std::vector<token::Token> tokens;
