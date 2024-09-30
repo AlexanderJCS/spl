@@ -1,10 +1,10 @@
 #include <iostream>
-#include <functional>
 
 #include "token/tokenizer.h"
 #include "ast/rpn.h"
 
 #include "ast/parser.h"
+
 
 int main() {
     token::Tokenizer token{"int a = 5;"};
