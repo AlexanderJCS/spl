@@ -7,6 +7,7 @@
 
 namespace token {
     enum class TokenType {
+        INVALID,
         IDENTIFIER,
         OPEN_PAREN,
         CLOSE_PAREN,
@@ -37,6 +38,7 @@ namespace token {
 
     class Token {
     public:
+        Token();
         Token(TokenType type, std::string value, size_t line, size_t column);
 
         [[nodiscard]] TokenType type() const;

@@ -10,4 +10,8 @@ add_executable(spl main.cpp
         token/tokenizer.h
         ast/rpn.cpp
         ast/rpn.h
+        ast/parser.cpp
+        ast/parser.h
+        ast/ast.cpp
+        ast/ast.h
 )

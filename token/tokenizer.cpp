@@ -45,6 +45,13 @@ token::Associativity token::Token::associativity() const {
     return operatorAssociativityMap.at(tokenType);
 }
 
+token::Token::Token() {
+    tokenType = TokenType::INVALID;
+    tokenValue = "";
+    lineAt = 0;
+    columnAt = 0;
+}
+
 
 token::Tokenizer::Tokenizer(std::string input) {
     tokens = tokenize(std::move(input));

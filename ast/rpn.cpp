@@ -1,35 +1,17 @@
-
 #include "rpn.h"
+
+#include "ast.h"
 #include "../token/tokenizer.h"
 
 #include <utility>
 #include <stack>
 
-ASTNode::ASTNode(const token::Token& value, std::vector<ASTNode> children)
-    : nodeToken(value), nodeChildren(std::move(children)) {}
-
-const token::Token& ASTNode::token() const {
-    return nodeToken;
-}
-
-const std::vector<ASTNode> &ASTNode::children() const {
-    return nodeChildren;
-}
-
-int ASTNode::line() const {
-    return lineAt;
-}
-
-int ASTNode::column() const {
-    return columnAt;
-}
-
 ShuntingYardParser::ShuntingYardParser(std::vector<token::Token> input)
     : tokens(std::move(input)), astRoot(parse()) {}
 
-ASTNode ShuntingYardParser::parse() const {
+node::ASTNode ShuntingYardParser::parse() const {
     std::stack<token::Token> operatorStack;
-    std::stack<ASTNode> operandStack;
+    std::stack<node::ASTNode> operandStack;
 
     for (const token::Token& token : tokens) {
         switch (token.type()) {
@@ -75,7 +57,7 @@ ASTNode ShuntingYardParser::parse() const {
 
             // default case: the token is not an operator
             default:
-                operandStack.push(ASTNode{token, {}});
+                operandStack.push(node::ASTNode{node::NodeType::EXPRESSION, token, {}});
                 break;
         }
     }
@@ -88,19 +70,19 @@ ASTNode ShuntingYardParser::parse() const {
     return operandStack.top();
 }
 
-const ASTNode &ShuntingYardParser::root() const {
+const node::ASTNode &ShuntingYardParser::root() const {
     return astRoot;
 }
 
-void ShuntingYardParser::addNode(std::stack<ASTNode> &operandStack, const token::Token &token) {
+void ShuntingYardParser::addNode(std::stack<node::ASTNode> &operandStack, const token::Token &token) {
     if (token.type() == token::TokenType::IDENTIFIER || token.type() == token::TokenType::LITERAL_INT) {
-        operandStack.push(ASTNode{token, {}});
+        operandStack.push(node::ASTNode{node::NodeType::EXPRESSION, token, {}});
     } else {
-        ASTNode right = operandStack.top();
+        node::ASTNode right = operandStack.top();
         operandStack.pop();
-        ASTNode left = operandStack.top();
+        node::ASTNode left = operandStack.top();
         operandStack.pop();
 
-        operandStack.push(ASTNode{token, {left, right}});
+        operandStack.push(node::ASTNode{node::NodeType::EXPRESSION, token, {left, right}});
     }
 }
