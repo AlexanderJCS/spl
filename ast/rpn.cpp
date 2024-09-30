@@ -60,7 +60,7 @@ ASTNode ShuntingYardParser::parse() const {
                 break;
 
             // add all operators to this case statement
-            case token::TokenType::OPERATOR_EQUAL:
+            case token::TokenType::OPERATOR_DEFINE:
                 while (!operatorStack.empty() &&  // stack is not empty
                        (operatorStack.top().precedence() > token.precedence() ||  // higher precedence
                        (operatorStack.top().precedence() == token.precedence() && token.associativity() == token::Associativity::LEFT))  // equal precedence if left associative

@@ -102,7 +102,7 @@ std::vector<token::Token> token::Tokenizer::tokenize(std::string input) {
                 break;
             case '=':
                 tokenizeIdentifierOrLiteral(buffer, tokens, line, i);
-                tokens.emplace_back(TokenType::OPERATOR_EQUAL, "=", line, i);
+                tokens.emplace_back(TokenType::OPERATOR_DEFINE, "=", line, i);
                 break;
             case ';':
                 tokenizeIdentifierOrLiteral(buffer, tokens, line, i);
