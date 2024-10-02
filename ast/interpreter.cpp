@@ -1,13 +1,14 @@
 #include "interpreter.h"
 
 #include <stdexcept>
+#include <utility>
 
 interpreter::Environment::Environment() : parent(nullptr) {}
 
 interpreter::Environment::Environment(const Environment &parent) : parent(&parent) {}
 
 void interpreter::Environment::set(const std::string &name, std::variant<int, float, std::string> value) {
-    variables[name] = value;
+    variables[name] = std::move(value);
 }
 
 bool interpreter::Environment::has(const std::string &name) const {
