@@ -2,27 +2,27 @@
 
 #include <utility>
 
-const token::Token& node::ASTNode::token() const {
+const token::Token& ast::ASTNode::token() const {
     return nodeToken;
 }
 
-const std::vector<node::ASTNode>& node::ASTNode::children() const {
+const std::vector<ast::ASTNode>& ast::ASTNode::children() const {
     return nodeChildren;
 }
 
-int node::ASTNode::line() const {
+int ast::ASTNode::line() const {
     return lineAt;
 }
 
-int node::ASTNode::column() const {
+int ast::ASTNode::column() const {
     return columnAt;
 }
 
-node::ASTNode::ASTNode() : nodeType(), lineAt(-1), columnAt(-1) {}
+ast::ASTNode::ASTNode() : nodeType(), lineAt(-1), columnAt(-1) {}
 
-node::ASTNode::ASTNode(NodeType type, token::Token token, std::vector<ASTNode> children)
+ast::ASTNode::ASTNode(NodeType type, token::Token token, std::vector<ASTNode> children)
     : nodeType(type), nodeToken(std::move(token)), nodeChildren(std::move(children)), lineAt(-1), columnAt(-1) {}
 
-std::vector<node::ASTNode> &node::ASTNode::childrenRef() {
+std::vector<ast::ASTNode> &ast::ASTNode::childrenRef() {
     return nodeChildren;
 }

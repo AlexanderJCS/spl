@@ -14,4 +14,6 @@ add_executable(spl main.cpp
         ast/parser.h
         ast/ast.cpp
         ast/ast.h
+        ast/interpreter.cpp
+        ast/interpreter.h
 )

@@ -13,8 +13,8 @@ Parser::Parser(std::vector<token::Token> input) {
 }
 
 
-node::ASTNode Parser::parse() {
-    node::ASTNode root;
+ast::ASTNode Parser::parse() {
+    ast::ASTNode root;
 
     while (!atEnd()) {
         root.childrenRef().push_back(parseDeclaration());
@@ -24,7 +24,7 @@ node::ASTNode Parser::parse() {
 }
 
 
-const node::ASTNode& Parser::root() const {
+const ast::ASTNode& Parser::root() const {
     return astRoot;
 }
 
@@ -44,7 +44,7 @@ token::Token Parser::advance() {
 }
 
 
-node::ASTNode Parser::parseStatement() {
+ast::ASTNode Parser::parseStatement() {
     if (currentToken().type() == token::TokenType::TYPE_SPECIFIER_INT) {
         return parseDeclaration();
     } else if (currentToken().type() == token::TokenType::IDENTIFIER || currentToken().type() == token::TokenType::LITERAL_INT) {
@@ -55,15 +55,15 @@ node::ASTNode Parser::parseStatement() {
 }
 
 
-node::ASTNode Parser::parseDeclaration() {
+ast::ASTNode Parser::parseDeclaration() {
     token::Token typeSpecifier = advance();
     token::Token identifier = advance();
     token::Token nextToken = advance();
 
-    node::ASTNode declaration = node::ASTNode(node::NodeType::DECLARATION, typeSpecifier, {node::ASTNode(node::NodeType::EXPRESSION, identifier, {})});
+    ast::ASTNode declaration = ast::ASTNode(ast::NodeType::DECLARATION, typeSpecifier, {ast::ASTNode(ast::NodeType::EXPRESSION, identifier, {})});
 
     if (nextToken.type() == token::TokenType::OPERATOR_DEFINE) {
-        node::ASTNode expression = parseExpression();
+        ast::ASTNode expression = parseExpression();
 
         declaration.childrenRef().push_back(expression);
     }
@@ -73,7 +73,7 @@ node::ASTNode Parser::parseDeclaration() {
 }
 
 
-node::ASTNode Parser::parseExpression() {
+ast::ASTNode Parser::parseExpression() {
     std::vector<token::Token> expressionTokens;
 
     while (currentToken().type() != token::TokenType::SEMICOLON) {

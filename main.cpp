@@ -15,7 +15,7 @@ int main() {
 
     Parser parser{token.getTokens()};
 
-    std::cout << "Root node children size: " << parser.root().children().size() << std::endl;
+    std::cout << "Root ast children size: " << parser.root().children().size() << std::endl;
 
     return 0;
 }

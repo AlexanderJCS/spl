@@ -11,9 +11,9 @@ ShuntingYardParser::ShuntingYardParser(std::vector<token::Token> input)
     : tokens(std::move(input)), astRoot(parse()) {}
 
 
-node::ASTNode ShuntingYardParser::parse() const {
+ast::ASTNode ShuntingYardParser::parse() const {
     std::stack<token::Token> operatorStack;
-    std::stack<node::ASTNode> operandStack;
+    std::stack<ast::ASTNode> operandStack;
 
     for (const token::Token& token : tokens) {
         switch (token.type()) {
@@ -59,7 +59,7 @@ node::ASTNode ShuntingYardParser::parse() const {
 
             // default case: the token is not an operator
             default:
-                operandStack.push(node::ASTNode{node::NodeType::EXPRESSION, token, {}});
+                operandStack.push(ast::ASTNode{ast::NodeType::EXPRESSION, token, {}});
                 break;
         }
     }
@@ -73,20 +73,20 @@ node::ASTNode ShuntingYardParser::parse() const {
 }
 
 
-const node::ASTNode &ShuntingYardParser::root() const {
+const ast::ASTNode &ShuntingYardParser::root() const {
     return astRoot;
 }
 
 
-void ShuntingYardParser::addNode(std::stack<node::ASTNode> &operandStack, const token::Token &token) {
+void ShuntingYardParser::addNode(std::stack<ast::ASTNode> &operandStack, const token::Token &token) {
     if (token.type() == token::TokenType::IDENTIFIER || token.type() == token::TokenType::LITERAL_INT) {
-        operandStack.push(node::ASTNode{node::NodeType::EXPRESSION, token, {}});
+        operandStack.push(ast::ASTNode{ast::NodeType::EXPRESSION, token, {}});
     } else {
-        node::ASTNode right = operandStack.top();
+        ast::ASTNode right = operandStack.top();
         operandStack.pop();
-        node::ASTNode left = operandStack.top();
+        ast::ASTNode left = operandStack.top();
         operandStack.pop();
 
-        operandStack.push(node::ASTNode{node::NodeType::EXPRESSION, token, {left, right}});
+        operandStack.push(ast::ASTNode{ast::NodeType::EXPRESSION, token, {left, right}});
     }
 }

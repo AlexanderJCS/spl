@@ -3,7 +3,7 @@
 
 #include "../token/tokenizer.h"
 
-namespace node {
+namespace ast {
     enum class NodeType {
         DECLARATION,
         STATEMENT,
@@ -20,7 +20,7 @@ namespace node {
 
         /**
          * TODO: this is a hack. I feel like this class should be immutable but this saves time for the moment.
-         * @return The children of this node.
+         * @return The children of this ast.
          */
         [[nodiscard]] std::vector<ASTNode>& childrenRef();
 
