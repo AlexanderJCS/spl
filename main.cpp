@@ -4,7 +4,7 @@
 #include "ast/rpn.h"
 
 #include "ast/parser.h"
-
+#include "ast/interpreter.h"
 
 int main() {
     token::Tokenizer token{"int a = 5;"};
@@ -16,6 +16,12 @@ int main() {
     Parser parser{token.getTokens()};
 
     std::cout << "Root ast children size: " << parser.root().children().size() << std::endl;
+
+    interpreter::Environment env{};
+
+    parser.root().eval(env);
+
+    std::cout << "Value of a: " << std::get<int>(env.get("a")) << std::endl;
 
     return 0;
 }

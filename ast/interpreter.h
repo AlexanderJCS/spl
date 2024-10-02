@@ -45,8 +45,6 @@ namespace interpreter {
         std::unordered_map<std::string, std::variant<int, float, std::string>> variables;
         const Environment* parent;  // may be nullptr
     };
-
-    void interpret(ast::ASTNode& root);
 }
 
 #endif  // SPL_INTERPRETER_H

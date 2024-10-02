@@ -33,5 +33,3 @@ std::variant<int, float, std::string> interpreter::Environment::get(const std::s
 void interpreter::Environment::remove(const std::string &name) {
     variables.erase(name);
 }
-
-

@@ -1,10 +1,20 @@
 #ifndef SPL_AST_H
 #define SPL_AST_H
 
+#include <variant>
+#include <string>
+
+// forward declaration
+namespace interpreter {
+    class Environment;
+}
+
+#include "interpreter.h"
 #include "../token/tokenizer.h"
 
 namespace ast {
     enum class NodeType {
+        ROOT,
         DECLARATION,
         STATEMENT,
         EXPRESSION
@@ -15,6 +25,7 @@ namespace ast {
         ASTNode();
         ASTNode(NodeType type, token::Token token, std::vector<ASTNode> children);
 
+        [[nodiscard]] NodeType type() const;
         [[nodiscard]] const token::Token& token() const;
         [[nodiscard]] const std::vector<ASTNode>& children() const;
 
@@ -26,6 +37,8 @@ namespace ast {
 
         [[nodiscard]] int line() const;
         [[nodiscard]] int column() const;
+
+        std::variant<int, float, std::string> eval(interpreter::Environment& env) const;
 
     private:
         NodeType nodeType;
