@@ -8,19 +8,19 @@ class Parser {
 public:
     Parser(std::vector<token::Token> input);
 
-    [[nodiscard]] const ast::ASTNode& root() const;
+    [[nodiscard]] ast::RootNode root() const;
 
 private:
-    ast::ASTNode parse();
+    ast::RootNode parse();
     [[nodiscard]] bool atEnd() const;
     [[nodiscard]] token::Token currentToken() const;
     token::Token advance();
-    ast::ASTNode parseStatement();
-    ast::ASTNode parseDeclaration();
-    ast::ASTNode parseExpression();
+    std::shared_ptr<ast::ASTNode> parseStatement();
+    ast::DeclarationNode parseDeclaration();
+    ast::ExpressionNode parseExpression();
     void expect(token::TokenType type);
 
-    ast::ASTNode astRoot;
+    ast::RootNode astRoot;
     std::vector<token::Token> tokens;
     int pos;
 };

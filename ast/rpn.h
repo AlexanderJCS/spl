@@ -15,15 +15,15 @@ class ShuntingYardParser {
 public:
     explicit ShuntingYardParser(std::vector<token::Token> input);
 
-    [[nodiscard]] const ast::ASTNode& root() const;
+    [[nodiscard]] const ast::ExpressionNode& root() const;
 
 private:
-    [[nodiscard]] ast::ASTNode parse() const;
+    [[nodiscard]] ast::ExpressionNode parse() const;
 
-    static void addNode(std::stack<ast::ASTNode>& operandStack, const token::Token& token);
+    static void addNode(std::stack<ast::ExpressionNode>& operandStack, const token::Token& token);
 
     std::vector<token::Token> tokens;
-    ast::ASTNode astRoot;
+    ast::ExpressionNode astRoot;
 };
 
 #endif  // SPL_RPN_H

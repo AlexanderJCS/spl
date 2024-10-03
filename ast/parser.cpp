@@ -13,18 +13,18 @@ Parser::Parser(std::vector<token::Token> input) {
 }
 
 
-ast::ASTNode Parser::parse() {
-    ast::ASTNode root;
+ast::RootNode Parser::parse() {
+    ast::RootNode root;
 
     while (!atEnd()) {
-        root.childrenRef().push_back(parseDeclaration());
+        root.children().push_back(parseStatement());
     }
 
     return root;
 }
 
 
-const ast::ASTNode& Parser::root() const {
+ast::RootNode Parser::root() const {
     return astRoot;
 }
 
@@ -44,28 +44,41 @@ token::Token Parser::advance() {
 }
 
 
-ast::ASTNode Parser::parseStatement() {
+std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
     if (currentToken().type() == token::TokenType::TYPE_SPECIFIER_INT) {
-        return parseDeclaration();
+        ast::DeclarationNode declaration = parseDeclaration();
+        std::shared_ptr<ast::ASTNode> declarationNode = std::make_shared<ast::DeclarationNode>(declaration);
+
+        return declarationNode;
+
     } else if (currentToken().type() == token::TokenType::IDENTIFIER || currentToken().type() == token::TokenType::LITERAL_INT) {
-        return parseExpression();
+        ast::ExpressionNode expression = parseExpression();
+        std::shared_ptr<ast::ASTNode> expressionNode = std::make_shared<ast::ExpressionNode>(expression);
+
+        return expressionNode;
     } else {
         throw std::runtime_error("Unexpected token");
     }
 }
 
 
-ast::ASTNode Parser::parseDeclaration() {
+ast::DeclarationNode Parser::parseDeclaration() {
     token::Token typeSpecifier = advance();
     token::Token identifier = advance();
     token::Token nextToken = advance();
 
-    ast::ASTNode declaration = ast::ASTNode(ast::NodeType::DECLARATION, typeSpecifier, {ast::ASTNode(ast::NodeType::EXPRESSION, identifier, {})});
+    ast::DeclarationNode declaration{
+        typeSpecifier,
+        {
+            std::make_shared<ast::ExpressionNode>(ast::ExpressionNode{identifier, {}})
+        }
+    };
 
     if (nextToken.type() == token::TokenType::OPERATOR_DEFINE) {
-        ast::ASTNode expression = parseExpression();
+        ast::ExpressionNode expression = parseExpression();
+        std::shared_ptr<ast::ASTNode> expressionPtr = std::make_shared<ast::ExpressionNode>(expression);
 
-        declaration.childrenRef().push_back(expression);
+        declaration.children().push_back(expressionPtr);
     }
 
     expect(token::TokenType::SEMICOLON);
@@ -73,7 +86,7 @@ ast::ASTNode Parser::parseDeclaration() {
 }
 
 
-ast::ASTNode Parser::parseExpression() {
+ast::ExpressionNode Parser::parseExpression() {
     std::vector<token::Token> expressionTokens;
 
     while (currentToken().type() != token::TokenType::SEMICOLON) {

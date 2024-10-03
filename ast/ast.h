@@ -3,6 +3,7 @@
 
 #include <variant>
 #include <string>
+#include <memory>
 
 // forward declaration
 namespace interpreter {
@@ -13,40 +14,61 @@ namespace interpreter {
 #include "../token/tokenizer.h"
 
 namespace ast {
-    enum class NodeType {
-        ROOT,
-        DECLARATION,
-        STATEMENT,
-        EXPRESSION
-    };
-
     class ASTNode {
     public:
         ASTNode();
-        ASTNode(NodeType type, token::Token token, std::vector<ASTNode> children);
+        ASTNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
 
-        [[nodiscard]] NodeType type() const;
         [[nodiscard]] const token::Token& token() const;
-        [[nodiscard]] const std::vector<ASTNode>& children() const;
 
         /**
-         * TODO: this is a hack. I feel like this class should be immutable but this saves time for the moment.
-         * @return The children of this ast.
+         * @return A reference to the children of this ast.
          */
-        [[nodiscard]] std::vector<ASTNode>& childrenRef();
+        [[nodiscard]] std::vector<std::shared_ptr<ASTNode>>& children();
 
         [[nodiscard]] int line() const;
         [[nodiscard]] int column() const;
 
-        std::variant<int, float, std::string> eval(interpreter::Environment& env) const;
+        virtual std::variant<int, float, std::string> eval(interpreter::Environment& env) const = 0;
 
-    private:
-        NodeType nodeType;
+    protected:
         token::Token nodeToken;
-        std::vector<ASTNode> nodeChildren;
+        std::vector<std::shared_ptr<ASTNode>> nodeChildren;
 
         int lineAt;
         int columnAt;
+    };
+
+    class RootNode : public ASTNode {
+    public:
+        RootNode() = default;
+        explicit RootNode(const std::vector<std::shared_ptr<ASTNode>>& children);
+
+        std::variant<int, float, std::string> eval(interpreter::Environment& env) const override;
+    };
+
+    class DeclarationNode : public ASTNode {
+    public:
+        DeclarationNode() = default;
+        explicit DeclarationNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
+
+        std::variant<int, float, std::string> eval(interpreter::Environment& env) const override;
+    };
+
+    class StatementNode : public ASTNode {
+    public:
+        StatementNode() = default;
+        explicit StatementNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
+
+        std::variant<int, float, std::string> eval(interpreter::Environment& env) const override;
+    };
+
+    class ExpressionNode : public ASTNode {
+    public:
+        ExpressionNode() = default;
+        explicit ExpressionNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
+
+        std::variant<int, float, std::string> eval(interpreter::Environment& env) const override;
     };
 }
 

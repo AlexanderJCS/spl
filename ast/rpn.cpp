@@ -11,9 +11,9 @@ ShuntingYardParser::ShuntingYardParser(std::vector<token::Token> input)
     : tokens(std::move(input)), astRoot(parse()) {}
 
 
-ast::ASTNode ShuntingYardParser::parse() const {
+ast::ExpressionNode ShuntingYardParser::parse() const {
     std::stack<token::Token> operatorStack;
-    std::stack<ast::ASTNode> operandStack;
+    std::stack<ast::ExpressionNode> operandStack;
 
     for (const token::Token& token : tokens) {
         switch (token.type()) {
@@ -59,7 +59,7 @@ ast::ASTNode ShuntingYardParser::parse() const {
 
             // default case: the token is not an operator
             default:
-                operandStack.push(ast::ASTNode{ast::NodeType::EXPRESSION, token, {}});
+                operandStack.push(ast::ExpressionNode{token, {}});
                 break;
         }
     }
@@ -72,21 +72,22 @@ ast::ASTNode ShuntingYardParser::parse() const {
     return operandStack.top();
 }
 
-
-const ast::ASTNode &ShuntingYardParser::root() const {
+const ast::ExpressionNode& ShuntingYardParser::root() const {
     return astRoot;
 }
 
-
-void ShuntingYardParser::addNode(std::stack<ast::ASTNode> &operandStack, const token::Token &token) {
+void ShuntingYardParser::addNode(std::stack<ast::ExpressionNode>& operandStack, const token::Token& token) {
     if (token.type() == token::TokenType::IDENTIFIER || token.type() == token::TokenType::LITERAL_INT) {
-        operandStack.push(ast::ASTNode{ast::NodeType::EXPRESSION, token, {}});
+        operandStack.push(ast::ExpressionNode{token, {}});
     } else {
-        ast::ASTNode right = operandStack.top();
+        ast::ExpressionNode right = operandStack.top();
         operandStack.pop();
-        ast::ASTNode left = operandStack.top();
+        ast::ExpressionNode left = operandStack.top();
         operandStack.pop();
 
-        operandStack.push(ast::ASTNode{ast::NodeType::EXPRESSION, token, {left, right}});
+        std::shared_ptr<ast::ASTNode> leftPtr = std::make_shared<ast::ExpressionNode>(left);
+        std::shared_ptr<ast::ASTNode> rightPtr = std::make_shared<ast::ExpressionNode>(right);
+
+        operandStack.push(ast::ExpressionNode{token, {leftPtr, rightPtr}});
     }
 }
