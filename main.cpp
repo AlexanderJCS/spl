@@ -5,7 +5,7 @@
 #include "ast/interpreter.h"
 
 int main() {
-    token::Tokenizer token{"mangoes = (3 + 2);"};
+    token::Tokenizer token{"mangoes = 3 + 2;"};
 
     for (const token::Token& t : token.getTokens()) {
         std::cout << "Token value: " << t.value() << " Token type: " << static_cast<int>(t.type()) << std::endl;
