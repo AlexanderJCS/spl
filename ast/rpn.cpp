@@ -44,6 +44,10 @@ ast::ExpressionNode ShuntingYardParser::parse() const {
                 break;
 
             // add all operators to this case statement
+            case token::TokenType::OPERATOR_ADD:
+            case token::TokenType::OPERATOR_SUB:
+            case token::TokenType::OPERATOR_MUL:
+            case token::TokenType::OPERATOR_DIV:
             case token::TokenType::OPERATOR_DEFINE:
                 while (!operatorStack.empty() &&  // stack is not empty
                        (operatorStack.top().precedence() > token.precedence() ||  // higher precedence

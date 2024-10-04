@@ -16,7 +16,11 @@ namespace token {
         LITERAL_INT,
         TYPE_SPECIFIER_INT,
         SEMICOLON,
-        OPERATOR_DEFINE
+        OPERATOR_DEFINE,
+        OPERATOR_ADD,
+        OPERATOR_SUB,
+        OPERATOR_MUL,
+        OPERATOR_DIV
     };
 
     /**
@@ -30,10 +34,18 @@ namespace token {
 
     const std::unordered_map<TokenType, int> operatorPrecedenceMap = {
             {TokenType::OPERATOR_DEFINE, 1},
+            {TokenType::OPERATOR_ADD, 2},
+            {TokenType::OPERATOR_SUB, 2},
+            {TokenType::OPERATOR_MUL, 3},
+            {TokenType::OPERATOR_DIV, 3}
     };
 
     const std::unordered_map<TokenType, Associativity> operatorAssociativityMap = {
-            {TokenType::OPERATOR_DEFINE, Associativity::RIGHT}
+            {TokenType::OPERATOR_DEFINE, Associativity::RIGHT},
+            {TokenType::OPERATOR_ADD, Associativity::LEFT},
+            {TokenType::OPERATOR_SUB, Associativity::LEFT},
+            {TokenType::OPERATOR_MUL, Associativity::LEFT},
+            {TokenType::OPERATOR_DIV, Associativity::LEFT}
     };
 
     class Token {

@@ -5,7 +5,7 @@
 #include "ast/interpreter.h"
 
 int main() {
-    token::Tokenizer token{"a = 5;"};
+    token::Tokenizer token{"mangoes = (3 + 2);"};
 
     for (const token::Token& t : token.getTokens()) {
         std::cout << "Token value: " << t.value() << " Token type: " << static_cast<int>(t.type()) << std::endl;
@@ -19,7 +19,7 @@ int main() {
 
     parser.root().eval(env);
 
-    std::cout << "Value of a: " << std::get<int>(env.get("a")) << std::endl;
+    std::cout << "Value of mangoes: " << std::get<int>(env.get("mangoes")) << std::endl;
 
     return 0;
 }

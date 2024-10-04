@@ -111,6 +111,22 @@ std::vector<token::Token> token::Tokenizer::tokenize(std::string input) {
                 tokenizeIdentifierOrLiteral(buffer, tokens, line, i);
                 tokens.emplace_back(TokenType::OPERATOR_DEFINE, "=", line, i);
                 break;
+            case '+':
+                tokenizeIdentifierOrLiteral(buffer, tokens, line, i);
+                tokens.emplace_back(TokenType::OPERATOR_ADD, "+", line, i);
+                break;
+            case '-':
+                tokenizeIdentifierOrLiteral(buffer, tokens, line, i);
+                tokens.emplace_back(TokenType::OPERATOR_SUB, "-", line, i);
+                break;
+            case '*':
+                tokenizeIdentifierOrLiteral(buffer, tokens, line, i);
+                tokens.emplace_back(TokenType::OPERATOR_MUL, "*", line, i);
+                break;
+            case '/':
+                tokenizeIdentifierOrLiteral(buffer, tokens, line, i);
+                tokens.emplace_back(TokenType::OPERATOR_DIV, "/", line, i);
+                break;
             case ';':
                 tokenizeIdentifierOrLiteral(buffer, tokens, line, i);
                 tokens.emplace_back(TokenType::SEMICOLON, ";", line, i);

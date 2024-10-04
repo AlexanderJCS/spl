@@ -57,7 +57,7 @@ std::variant<int, float, std::string> ast::StatementNode::eval(interpreter::Envi
 ast::StatementNode::StatementNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
     : ASTNode(std::move(token), std::move(children)) {}
 
-std::variant<int, float, std::string> ast::ExpressionNode::eval(interpreter::Environment &env) const {
+std::variant<int, float, std::string> ast::ExpressionNode::eval(interpreter::Environment& env) const {
     if (nodeChildren.empty()) {
         if (nodeToken.type() == token::TokenType::IDENTIFIER) {
             return env.get(nodeToken.value());
@@ -70,7 +70,41 @@ std::variant<int, float, std::string> ast::ExpressionNode::eval(interpreter::Env
         std::variant<int, float, std::string> left = nodeChildren[0]->eval(env);
         std::variant<int, float, std::string> right = nodeChildren[1]->eval(env);
 
-        // todo: iterate through all operators and apply the correct one
+        if (nodeToken.type() == token::TokenType::OPERATOR_ADD) {
+            if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
+                return std::get<int>(left) + std::get<int>(right);
+            } else if (std::holds_alternative<float>(left) && std::holds_alternative<float>(right)) {
+                return std::get<float>(left) + std::get<float>(right);
+            } else {
+                throw std::runtime_error("Invalid types for addition");
+            }
+        } else if (nodeToken.type() == token::TokenType::OPERATOR_SUB) {
+            if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
+                return std::get<int>(left) - std::get<int>(right);
+            } else if (std::holds_alternative<float>(left) && std::holds_alternative<float>(right)) {
+                return std::get<float>(left) - std::get<float>(right);
+            } else {
+                throw std::runtime_error("Invalid types for subtraction");
+            }
+        } else if (nodeToken.type() == token::TokenType::OPERATOR_MUL) {
+            if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
+                return std::get<int>(left) * std::get<int>(right);
+            } else if (std::holds_alternative<float>(left) && std::holds_alternative<float>(right)) {
+                return std::get<float>(left) * std::get<float>(right);
+            } else {
+                throw std::runtime_error("Invalid types for multiplication");
+            }
+        } else if (nodeToken.type() == token::TokenType::OPERATOR_DIV) {
+            if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
+                return std::get<int>(left) / std::get<int>(right);
+            } else if (std::holds_alternative<float>(left) && std::holds_alternative<float>(right)) {
+                return std::get<float>(left) / std::get<float>(right);
+            } else {
+                throw std::runtime_error("Invalid types for division");
+            }
+        } else {
+            throw std::runtime_error("Unexpected token");
+        }
     }
 }
 
