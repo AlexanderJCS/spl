@@ -44,8 +44,13 @@ token::Token Parser::advance() {
 }
 
 
+token::Token Parser::peek() const {
+    return tokens[pos + 1];
+}
+
+
 std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
-    if (currentToken().type() == token::TokenType::TYPE_SPECIFIER_INT) {
+    if (currentToken().type() == token::TokenType::IDENTIFIER && peek().type() == token::TokenType::OPERATOR_DEFINE) {
         ast::DeclarationNode declaration = parseDeclaration();
         std::shared_ptr<ast::ASTNode> declarationNode = std::make_shared<ast::DeclarationNode>(declaration);
 
@@ -63,12 +68,10 @@ std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
 
 
 ast::DeclarationNode Parser::parseDeclaration() {
-    token::Token typeSpecifier = advance();
     token::Token identifier = advance();
     token::Token nextToken = advance();
 
     ast::DeclarationNode declaration{
-        typeSpecifier,
         {
             std::make_shared<ast::ExpressionNode>(ast::ExpressionNode{identifier, {}})
         }

@@ -48,7 +48,7 @@ std::variant<int, float, std::string> ast::DeclarationNode::eval(interpreter::En
     return {};
 }
 
-ast::DeclarationNode::DeclarationNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children) : ASTNode(std::move(token), children) {}
+ast::DeclarationNode::DeclarationNode(std::vector<std::shared_ptr<ASTNode>> children) : ASTNode(token::Token(), children) {}
 
 std::variant<int, float, std::string> ast::StatementNode::eval(interpreter::Environment &env) const {
     return -1;  // not implemented

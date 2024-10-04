@@ -1,13 +1,11 @@
 #include <iostream>
 
 #include "token/tokenizer.h"
-#include "ast/rpn.h"
-
 #include "ast/parser.h"
 #include "ast/interpreter.h"
 
 int main() {
-    token::Tokenizer token{"int a = 5;"};
+    token::Tokenizer token{"a = 5;"};
 
     for (const token::Token& t : token.getTokens()) {
         std::cout << "Token value: " << t.value() << " Token type: " << static_cast<int>(t.type()) << std::endl;

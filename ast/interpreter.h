@@ -9,6 +9,8 @@
 #include "ast.h"
 
 namespace interpreter {
+    using VariantType = std::variant<int, float, std::string>;
+
     class Environment {
     public:
         Environment();
@@ -19,14 +21,26 @@ namespace interpreter {
          * @param name The name of the variable
          * @param value The value of the variable
          */
-        void set(const std::string& name, std::variant<int, float, std::string> value);
+        void set(const std::string& name, VariantType value);
 
         /**
          * Gets a variable from the environment. Throws an exception if the variable is not in the environment
          * @param name The name of the variable
          * @return The value of the variable
          */
-        std::variant<int, float, std::string> get(const std::string& name) const;
+        VariantType get(const std::string& name) const;
+
+        /**
+         * Gets the type of a variable in the environment as a string. Possible types:
+         * - "int"
+         * - "float"
+         * - "string"
+         *
+         * @throws std::runtime_error if the variable is not in the environment
+         * @param name The name of the variable
+         * @return The type of the variable as a string
+         */
+        std::string getType(const std::string& name) const;
 
         /**
          * Checks if a variable is in the environment
@@ -42,7 +56,7 @@ namespace interpreter {
         void remove(const std::string& name);
 
     private:
-        std::unordered_map<std::string, std::variant<int, float, std::string>> variables;
+        std::unordered_map<std::string, VariantType> variables;
         const Environment* parent;  // may be nullptr
     };
 }

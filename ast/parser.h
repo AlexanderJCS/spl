@@ -11,13 +11,60 @@ public:
     [[nodiscard]] ast::RootNode root() const;
 
 private:
+    /**
+     * Parses the input tokens into an AST.
+     * @return The root of the AST
+     */
     ast::RootNode parse();
+
+    /**
+     * Checks if the parser is at the end of the input.
+     * @return True if the parser is at the end of the input, false otherwise
+     */
     [[nodiscard]] bool atEnd() const;
+
+    /**
+     * Returns the current token.
+     * @return The current token
+     */
     [[nodiscard]] token::Token currentToken() const;
+
+    /**
+     * Peeks at the next token.
+     * @return The next token
+     */
+    [[nodiscard]] token::Token peek() const;
+
+    /**
+     * Advances the parser by one token.
+     * @return The token before advancing
+     */
     token::Token advance();
+
+    /**
+     * Parses a generalized statement.
+     * @return The root of the statement tree
+     */
     std::shared_ptr<ast::ASTNode> parseStatement();
+
+    /**
+     * Parses a declaration
+     * @return The root of the declaration tree
+     */
     ast::DeclarationNode parseDeclaration();
+
+    /**
+     * Parses an expression using the shunting yard algorithm.
+     * @return The root of the expression tree
+     */
     ast::ExpressionNode parseExpression();
+
+    /**
+     * Checks if the current token is of the expected type. Throws an exception if it is not.
+     *
+     * @throws std::runtime_error if the current token is not of the expected type
+     * @param type The expected type of the token
+     */
     void expect(token::TokenType type);
 
     ast::RootNode astRoot;

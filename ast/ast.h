@@ -50,7 +50,7 @@ namespace ast {
     class DeclarationNode : public ASTNode {
     public:
         DeclarationNode() = default;
-        explicit DeclarationNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
+        explicit DeclarationNode(std::vector<std::shared_ptr<ASTNode>> children);
 
         std::variant<int, float, std::string> eval(interpreter::Environment& env) const override;
     };
