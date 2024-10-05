@@ -25,7 +25,7 @@ ast::ASTNode::ASTNode() : lineAt(-1), columnAt(-1) {}
 ast::ASTNode::ASTNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
     : nodeToken(std::move(token)), nodeChildren(std::move(children)), lineAt(-1), columnAt(-1) {}
 
-std::variant<int, float, std::string> ast::RootNode::eval(interpreter::Environment &env) const {
+std::variant<int, float, std::string> ast::RootNode::eval(env::Environment &env) const {
     for (std::shared_ptr<ast::ASTNode> child : nodeChildren) {
         child->eval(env);
     }
@@ -38,7 +38,7 @@ ast::RootNode::RootNode(const std::vector<std::shared_ptr<ASTNode>> &children) {
 }
 
 
-std::variant<int, float, std::string> ast::DeclarationNode::eval(interpreter::Environment &env) const {
+std::variant<int, float, std::string> ast::DeclarationNode::eval(env::Environment &env) const {
     token::Token typeSpecifier = nodeToken;
     token::Token identifier = nodeChildren[0]->token();
     std::variant<int, float, std::string> value = nodeChildren[1]->eval(env);
@@ -48,16 +48,17 @@ std::variant<int, float, std::string> ast::DeclarationNode::eval(interpreter::En
     return {};
 }
 
-ast::DeclarationNode::DeclarationNode(std::vector<std::shared_ptr<ASTNode>> children) : ASTNode(token::Token(), children) {}
+ast::DeclarationNode::DeclarationNode(std::vector<std::shared_ptr<ASTNode>> children)
+    : ASTNode(token::Token(), std::move(children)) {}
 
-std::variant<int, float, std::string> ast::StatementNode::eval(interpreter::Environment &env) const {
+std::variant<int, float, std::string> ast::StatementNode::eval(env::Environment &env) const {
     return -1;  // not implemented
 }
 
 ast::StatementNode::StatementNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
     : ASTNode(std::move(token), std::move(children)) {}
 
-std::variant<int, float, std::string> ast::ExpressionNode::eval(interpreter::Environment& env) const {
+std::variant<int, float, std::string> ast::ExpressionNode::eval(env::Environment& env) const {
     if (nodeChildren.empty()) {
         if (nodeToken.type() == token::TokenType::IDENTIFIER) {
             return env.get(nodeToken.value());
@@ -108,6 +109,5 @@ std::variant<int, float, std::string> ast::ExpressionNode::eval(interpreter::Env
     }
 }
 
-ast::ExpressionNode::ExpressionNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children) : ASTNode(token, children) {
-
-}
+ast::ExpressionNode::ExpressionNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
+    : ASTNode(std::move(token), std::move(children)) {}

@@ -1,7 +1,7 @@
 #include "rpn.h"
 
 #include "ast.h"
-#include "../token/tokenizer.h"
+#include "tokenizer.h"
 
 #include <utility>
 #include <stack>

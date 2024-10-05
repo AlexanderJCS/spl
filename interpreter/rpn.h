@@ -2,7 +2,7 @@
 #define SPL_RPN_H
 
 #include "ast.h"
-#include "../token/tokenizer.h"
+#include "tokenizer.h"
 
 #include <string>
 #include <vector>

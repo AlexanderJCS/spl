@@ -1,5 +1,5 @@
-#ifndef SPL_INTERPRETER_H
-#define SPL_INTERPRETER_H
+#ifndef SPL_ENVIRONMENT_H
+#define SPL_ENVIRONMENT_H
 
 #include <variant>
 #include <string>
@@ -8,7 +8,7 @@
 
 #include "ast.h"
 
-namespace interpreter {
+namespace env {
     using VariantType = std::variant<int, float, std::string>;
 
     class Environment {
@@ -61,4 +61,4 @@ namespace interpreter {
     };
 }
 
-#endif  // SPL_INTERPRETER_H
+#endif  // SPL_ENVIRONMENT_H

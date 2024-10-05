@@ -6,12 +6,12 @@
 #include <memory>
 
 // forward declaration
-namespace interpreter {
+namespace env {
     class Environment;
 }
 
-#include "interpreter.h"
-#include "../token/tokenizer.h"
+#include "environment.h"
+#include "tokenizer.h"
 
 namespace ast {
     class ASTNode {
@@ -22,14 +22,14 @@ namespace ast {
         [[nodiscard]] const token::Token& token() const;
 
         /**
-         * @return A reference to the children of this ast.
+         * @return A reference to the children of this interpreter.
          */
         [[nodiscard]] std::vector<std::shared_ptr<ASTNode>>& children();
 
         [[nodiscard]] int line() const;
         [[nodiscard]] int column() const;
 
-        virtual std::variant<int, float, std::string> eval(interpreter::Environment& env) const = 0;
+        virtual std::variant<int, float, std::string> eval(env::Environment& env) const = 0;
 
     protected:
         token::Token nodeToken;
@@ -44,7 +44,7 @@ namespace ast {
         RootNode() = default;
         explicit RootNode(const std::vector<std::shared_ptr<ASTNode>>& children);
 
-        std::variant<int, float, std::string> eval(interpreter::Environment& env) const override;
+        std::variant<int, float, std::string> eval(env::Environment& env) const override;
     };
 
     class DeclarationNode : public ASTNode {
@@ -52,7 +52,7 @@ namespace ast {
         DeclarationNode() = default;
         explicit DeclarationNode(std::vector<std::shared_ptr<ASTNode>> children);
 
-        std::variant<int, float, std::string> eval(interpreter::Environment& env) const override;
+        std::variant<int, float, std::string> eval(env::Environment& env) const override;
     };
 
     class StatementNode : public ASTNode {
@@ -60,7 +60,7 @@ namespace ast {
         StatementNode() = default;
         explicit StatementNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
 
-        std::variant<int, float, std::string> eval(interpreter::Environment& env) const override;
+        std::variant<int, float, std::string> eval(env::Environment& env) const override;
     };
 
     class ExpressionNode : public ASTNode {
@@ -68,7 +68,7 @@ namespace ast {
         ExpressionNode() = default;
         explicit ExpressionNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
 
-        std::variant<int, float, std::string> eval(interpreter::Environment& env) const override;
+        std::variant<int, float, std::string> eval(env::Environment& env) const override;
     };
 }
 
