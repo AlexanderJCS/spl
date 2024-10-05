@@ -14,7 +14,6 @@ namespace token {
         OPEN_BRACE,
         CLOSE_BRACE,
         LITERAL_INT,
-        TYPE_SPECIFIER_INT,
         SEMICOLON,
         OPERATOR_DEFINE,
         OPERATOR_ADD,

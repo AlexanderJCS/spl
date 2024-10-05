@@ -58,14 +58,14 @@ token::Tokenizer::Tokenizer(std::string input) {
 }
 
 
-void token::Tokenizer::tokenizeIdentifierOrLiteral(std::string &buffer, std::vector<Token> &tokens, size_t line, size_t column){
+void token::Tokenizer::tokenizeIdentifierOrLiteral(
+        std::string &buffer, std::vector<Token>& tokens, size_t line, size_t column
+) {
     if (buffer.empty()) {
         return;
     }
 
-    if (buffer == "int") {
-        tokens.emplace_back(TokenType::TYPE_SPECIFIER_INT, buffer, line, column);
-    } else if (std::isalpha(buffer[0])) {
+    if (std::isalpha(buffer[0])) {
         tokens.emplace_back(TokenType::IDENTIFIER, buffer, line, column);
     } else {
         tokens.emplace_back(TokenType::LITERAL_INT, buffer, line, column);
