@@ -107,3 +107,13 @@ void Parser::expect(token::TokenType type) {
         throw std::runtime_error("Unexpected token");
     }
 }
+
+void Parser::addFunctionCalls() {
+    for (int i = 0; i < tokens.size(); i++) {
+        token::Token t = tokens[i];
+
+        if (t.type() == token::TokenType::IDENTIFIER && i + 1 < tokens.size() && tokens[i + 1].type() == token::TokenType::OPEN_PAREN) {
+
+        }
+    }
+}

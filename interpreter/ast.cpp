@@ -111,3 +111,18 @@ std::variant<int, float, std::string> ast::ExpressionNode::eval(env::Environment
 
 ast::ExpressionNode::ExpressionNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
     : ASTNode(std::move(token), std::move(children)) {}
+
+ast::FunctionCallNode::FunctionCallNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children) : ExpressionNode(
+        token, children) {}
+
+env::VariantType ast::FunctionCallNode::eval(env::Environment& env) const {
+    std::string functionName = nodeToken.value();
+
+    if (env.getType(functionName) != "function") {
+        throw std::runtime_error("Function " + functionName + " is not a function");
+    }
+
+    // todo: implement the function call
+
+    return {};  // should return the return value of the function
+}

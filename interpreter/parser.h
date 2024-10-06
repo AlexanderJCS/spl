@@ -18,6 +18,12 @@ private:
     ast::RootNode parse();
 
     /**
+     * Goes through each token and, if it is a function declaration, changes the token type to FUNCTION_CALL.
+     * Mutates the tokens vector. Intended to be called before parse().
+     */
+    void addFunctionCalls();
+
+    /**
      * Checks if the parser is at the end of the input.
      * @return True if the parser is at the end of the input, false otherwise
      */

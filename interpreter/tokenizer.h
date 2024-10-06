@@ -81,6 +81,25 @@ namespace token {
         size_t columnAt;
     };
 
+    /**
+     * A special token for function calls. This token is used to represent a function call so it can be passed to the
+     * Shunting Yard Parser.
+     */
+    class FunctionCall : public Token {
+        // todo: this implementation by creating a function token and token class is not ideal but it works
+        // todo: finish implementation
+    public:
+        FunctionCall(std::string functionName, size_t line, size_t column, std::vector<Token> arguments);
+
+        [[nodiscard]] std::vector<Token> arguments() const;
+
+        [[nodiscard]] std::string functionName() const;
+
+    private:
+        std::vector<Token> functionArguments;
+        std::string functionNameValue;
+    };
+
     class Tokenizer {
     public:
         explicit Tokenizer(std::string input);

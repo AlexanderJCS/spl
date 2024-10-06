@@ -7,6 +7,8 @@
 
 // forward declaration
 namespace env {
+    using VariantType = std::variant<int, float, std::string>;
+
     class Environment;
 }
 
@@ -29,7 +31,7 @@ namespace ast {
         [[nodiscard]] int line() const;
         [[nodiscard]] int column() const;
 
-        virtual std::variant<int, float, std::string> eval(env::Environment& env) const = 0;
+        virtual env::VariantType eval(env::Environment& env) const = 0;
 
     protected:
         token::Token nodeToken;
@@ -44,7 +46,7 @@ namespace ast {
         RootNode() = default;
         explicit RootNode(const std::vector<std::shared_ptr<ASTNode>>& children);
 
-        std::variant<int, float, std::string> eval(env::Environment& env) const override;
+        env::VariantType eval(env::Environment& env) const override;
     };
 
     class DeclarationNode : public ASTNode {
@@ -52,7 +54,7 @@ namespace ast {
         DeclarationNode() = default;
         explicit DeclarationNode(std::vector<std::shared_ptr<ASTNode>> children);
 
-        std::variant<int, float, std::string> eval(env::Environment& env) const override;
+        env::VariantType eval(env::Environment& env) const override;
     };
 
     class StatementNode : public ASTNode {
@@ -60,7 +62,7 @@ namespace ast {
         StatementNode() = default;
         explicit StatementNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
 
-        std::variant<int, float, std::string> eval(env::Environment& env) const override;
+        env::VariantType eval(env::Environment& env) const override;
     };
 
     class ExpressionNode : public ASTNode {
@@ -68,7 +70,21 @@ namespace ast {
         ExpressionNode() = default;
         explicit ExpressionNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
 
-        std::variant<int, float, std::string> eval(env::Environment& env) const override;
+        env::VariantType eval(env::Environment& env) const override;
+    };
+
+    class FunctionCallNode : public ExpressionNode {
+    public:
+        FunctionCallNode() = default;
+
+        /**
+         * Construct a FunctionCallNode with a token and children.
+         * @param token The token of the node. Should be an identifier and contain the name of the function.
+         * @param children The arguments to the function. Each child should be an ExpressionNode.
+         */
+        explicit FunctionCallNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
+
+        env::VariantType eval(env::Environment& env) const override;
     };
 }
 
