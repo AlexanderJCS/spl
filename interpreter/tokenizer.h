@@ -19,7 +19,11 @@ namespace token {
         OPERATOR_ADD,
         OPERATOR_SUB,
         OPERATOR_MUL,
-        OPERATOR_DIV
+        OPERATOR_DIV,
+        FUNCTION_DEF,
+        FUNCTION_CALL,
+        RETURN,
+        SEPARATOR
     };
 
     /**
@@ -95,8 +99,8 @@ namespace token {
          * @param line The line number of the token.
          * @param column The column number of the token.
          */
-        static void tokenizeIdentifierOrLiteral(std::string& buffer, std::vector<Token>& tokens, size_t line, size_t column);
-        static std::vector<Token> tokenize(std::string input);
+        static void processBuffer(std::string& buffer, std::vector<Token>& tokens, size_t line, size_t column);
+        static std::vector<Token> tokenize(const std::string& input);
     };
 }
 

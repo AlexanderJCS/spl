@@ -19,14 +19,16 @@ TEST(TokenizerTest, AlwaysTrue) {
      * OPERATOR_ADD,
      * OPERATOR_SUB,
      * OPERATOR_MUL,
-     * OPERATOR_DIV
+     * OPERATOR_DIV,
+     * FUNCTION_DEF,
+     * FUNCTION_CALL,
+     * RETURN,
+     * SEPARATOR
      */
 
-    std::string input = "x ( { } ) 42 ; = \n \n   \t  + - * /";
+    std::string input = "x ( { } ) 42 ; = \n \n   \t  + - * / fun return ,";
     token::Tokenizer tokenizer(input);
     std::vector<token::Token> tokens = tokenizer.getTokens();
-
-    ASSERT_EQ(tokens.size(), 12);
 
     // Create expected token types and values
     std::vector<std::pair<token::TokenType, std::string>> expectedTokens = {
@@ -41,8 +43,13 @@ TEST(TokenizerTest, AlwaysTrue) {
             {token::TokenType::OPERATOR_ADD, ""},
             {token::TokenType::OPERATOR_SUB, ""},
             {token::TokenType::OPERATOR_MUL, ""},
-            {token::TokenType::OPERATOR_DIV, ""}
+            {token::TokenType::OPERATOR_DIV, ""},
+            {token::TokenType::FUNCTION_DEF, ""},
+            {token::TokenType::RETURN, ""},
+            {token::TokenType::SEPARATOR, ""}
     };
+
+    ASSERT_EQ(tokens.size(), expectedTokens.size());
 
     // Loop through the expected tokens and assert their properties
     for (size_t i = 0; i < expectedTokens.size(); ++i) {
