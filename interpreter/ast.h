@@ -4,6 +4,7 @@
 #include <variant>
 #include <string>
 #include <memory>
+#include <vector>
 
 // forward declaration
 namespace env {
@@ -12,8 +13,13 @@ namespace env {
     class Environment;
 }
 
+namespace token {
+    class Token;
+}
+
 #include "environment.h"
 #include "tokenizer.h"
+
 
 namespace ast {
     class ASTNode {

@@ -5,6 +5,7 @@
 
 #include <utility>
 #include <stack>
+#include <stdexcept>
 
 
 ShuntingYardParser::ShuntingYardParser(std::vector<token::Token> input)
@@ -83,6 +84,24 @@ const ast::ExpressionNode& ShuntingYardParser::root() const {
 void ShuntingYardParser::addNode(std::stack<ast::ExpressionNode>& operandStack, const token::Token& token) {
     if (token.type() == token::TokenType::IDENTIFIER || token.type() == token::TokenType::LITERAL_INT) {
         operandStack.push(ast::ExpressionNode{token, {}});
+    } if (token.type() == token::TokenType::FUNCTION_CALL) {
+        // Assuming token is a pointer or reference to token::Token
+        const auto* functionCallTokenPtr = dynamic_cast<const token::FunctionCallToken*>(&token);
+
+        if (!functionCallTokenPtr) {
+            throw std::runtime_error("Error: expected FunctionCallToken but got something else");
+        }
+
+        const auto& functionCallToken = *functionCallTokenPtr;
+
+        // todo: this should probably be a method in the FunctionCallToken class, or directly in the FunctionCallNode
+        //  constructor
+        std::vector<std::shared_ptr<ast::ASTNode>> arguments;
+        for (const ast::ExpressionNode& argument : functionCallToken.arguments()) {
+            arguments.push_back(std::make_shared<ast::ExpressionNode>(argument));
+        }
+
+        operandStack.push(ast::FunctionCallNode(token, arguments));
     } else {
         ast::ExpressionNode right = operandStack.top();
         operandStack.pop();

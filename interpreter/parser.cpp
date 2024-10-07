@@ -89,11 +89,32 @@ ast::DeclarationNode Parser::parseDeclaration() {
 }
 
 
+token::FunctionCallToken Parser::parseFunctionCall() {
+    token::Token identifier = advance();
+    expect(token::TokenType::OPEN_PAREN);
+
+    std::vector<ast::ExpressionNode> arguments;
+
+    while (currentToken().type() != token::TokenType::CLOSE_PAREN) {
+        arguments.push_back(parseExpression());
+    }
+
+    expect(token::TokenType::CLOSE_PAREN);
+
+    return token::FunctionCallToken{identifier.value(), identifier.line(), identifier.column(), arguments};
+}
+
+
 ast::ExpressionNode Parser::parseExpression() {
     std::vector<token::Token> expressionTokens;
 
-    while (currentToken().type() != token::TokenType::SEMICOLON) {
+    while (currentToken().type() != token::TokenType::SEMICOLON && currentToken().type() != token::TokenType::SEPARATOR) {
         expressionTokens.push_back(advance());
+
+        if (currentToken().type() == token::TokenType::IDENTIFIER && peek().type() == token::TokenType::OPEN_PAREN) {
+            token::FunctionCallToken functionCall = parseFunctionCall();
+            expressionTokens.push_back(functionCall);
+        }
     }
 
     ShuntingYardParser shuntingYardParser{expressionTokens};
@@ -105,15 +126,5 @@ ast::ExpressionNode Parser::parseExpression() {
 void Parser::expect(token::TokenType type) {
     if (advance().type() != type) {
         throw std::runtime_error("Unexpected token");
-    }
-}
-
-void Parser::addFunctionCalls() {
-    for (int i = 0; i < tokens.size(); i++) {
-        token::Token t = tokens[i];
-
-        if (t.type() == token::TokenType::IDENTIFIER && i + 1 < tokens.size() && tokens[i + 1].type() == token::TokenType::OPEN_PAREN) {
-
-        }
     }
 }

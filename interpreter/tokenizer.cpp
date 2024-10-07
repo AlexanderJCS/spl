@@ -4,6 +4,8 @@
 #include <string>
 #include <cctype>
 
+#include "ast.h"
+
 
 token::Token::Token(TokenType type, std::string value, size_t line, size_t column)
     : tokenType(type), tokenValue(std::move(value)), lineAt(line), columnAt(column) {}
@@ -53,8 +55,8 @@ token::Token::Token() {
 }
 
 
-token::Tokenizer::Tokenizer(std::string input) {
-    tokens = tokenize(std::move(input));
+token::Tokenizer::Tokenizer(const std::string& input) {
+    tokens = tokenize(input);
 }
 
 
@@ -133,4 +135,12 @@ std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
 
 std::vector<token::Token> token::Tokenizer::getTokens() const {
     return tokens;
+}
+
+token::FunctionCallToken::FunctionCallToken(const std::string& functionName, size_t line, size_t column, std::vector<ast::ExpressionNode> arguments)
+    : Token(TokenType::FUNCTION_CALL,functionName, line, column),
+            functionArguments(std::move(arguments)) {}
+
+std::vector<ast::ExpressionNode> token::FunctionCallToken::arguments() const {
+    return functionArguments;
 }

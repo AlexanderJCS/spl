@@ -5,6 +5,11 @@
 #include <vector>
 #include <unordered_map>
 
+namespace ast {
+    class ExpressionNode;  // Forward declaration of ast::ExpressionNode
+    class FunctionCallNode;  // Forward declaration of ast::FunctionCallNode
+}
+
 namespace token {
     enum class TokenType {
         INVALID,
@@ -55,6 +60,7 @@ namespace token {
     public:
         Token();
         Token(TokenType type, std::string value, size_t line, size_t column);
+        virtual ~Token() = default;  // virtual destructor to allow for polymorphism... I hate c++
 
         [[nodiscard]] TokenType type() const;
         [[nodiscard]] std::string value() const;
@@ -82,27 +88,25 @@ namespace token {
     };
 
     /**
-     * A special token for function calls. This token is used to represent a function call so it can be passed to the
-     * Shunting Yard Parser.
+     * A special "pseudo-token" for function calls. This token is used to represent a function call so it can be
+     * passed to the Shunting Yard Parser.
      */
-    class FunctionCall : public Token {
+    class FunctionCallToken : public Token {
         // todo: this implementation by creating a function token and token class is not ideal but it works
         // todo: finish implementation
     public:
-        FunctionCall(std::string functionName, size_t line, size_t column, std::vector<Token> arguments);
+        FunctionCallToken(const std::string& functionName, size_t line, size_t column, std::vector<ast::ExpressionNode> arguments);
+        ~FunctionCallToken() override = default;
 
-        [[nodiscard]] std::vector<Token> arguments() const;
-
-        [[nodiscard]] std::string functionName() const;
+        [[nodiscard]] std::vector<ast::ExpressionNode> arguments() const;
 
     private:
-        std::vector<Token> functionArguments;
-        std::string functionNameValue;
+        std::vector<ast::ExpressionNode> functionArguments;
     };
 
     class Tokenizer {
     public:
-        explicit Tokenizer(std::string input);
+        explicit Tokenizer(const std::string& input);
 
         [[nodiscard]] std::vector<Token> getTokens() const;
 

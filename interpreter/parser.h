@@ -18,12 +18,6 @@ private:
     ast::RootNode parse();
 
     /**
-     * Goes through each token and, if it is a function declaration, changes the token type to FUNCTION_CALL.
-     * Mutates the tokens vector. Intended to be called before parse().
-     */
-    void addFunctionCalls();
-
-    /**
      * Checks if the parser is at the end of the input.
      * @return True if the parser is at the end of the input, false otherwise
      */
@@ -72,6 +66,12 @@ private:
      * @param type The expected type of the token
      */
     void expect(token::TokenType type);
+
+    /**
+     * Parses a function call. Assumes the current token is the function name/identifier.
+     * @return The function call pseudo-token
+     */
+    token::FunctionCallToken parseFunctionCall();
 
     ast::RootNode astRoot;
     std::vector<token::Token> tokens;
