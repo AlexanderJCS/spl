@@ -45,25 +45,34 @@ token::Token Parser::advance() {
 
 
 token::Token Parser::peek() const {
+    if (pos + 1 >= tokens.size()) {
+        throw std::runtime_error("Could not peek: end of input");
+    }
+
     return tokens[pos + 1];
 }
 
 
 std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
-    if (currentToken().type() == token::TokenType::IDENTIFIER && peek().type() == token::TokenType::OPERATOR_DEFINE) {
+    if (currentToken().type() == token::TokenType::SEMICOLON) {
+        advance();  // skip
+    } else if (currentToken().type() == token::TokenType::IDENTIFIER && peek().type() == token::TokenType::OPERATOR_DEFINE) {
         ast::DeclarationNode declaration = parseDeclaration();
         std::shared_ptr<ast::ASTNode> declarationNode = std::make_shared<ast::DeclarationNode>(declaration);
 
         return declarationNode;
-
     } else if (currentToken().type() == token::TokenType::IDENTIFIER || currentToken().type() == token::TokenType::LITERAL_INT) {
         ast::ExpressionNode expression = parseExpression();
         std::shared_ptr<ast::ASTNode> expressionNode = std::make_shared<ast::ExpressionNode>(expression);
 
         return expressionNode;
+    } else if (currentToken().type() == token::TokenType::FUNCTION_CALL) {
+        // hi mom!
     } else {
-        throw std::runtime_error("Unexpected token");
+        throw std::runtime_error("Could not determine how to parse a statement from the current token");
     }
+
+    return nullptr;
 }
 
 
@@ -101,6 +110,7 @@ token::FunctionCallToken Parser::parseFunctionCall() {
 
     expect(token::TokenType::CLOSE_PAREN);
 
+
     return token::FunctionCallToken{identifier.value(), identifier.line(), identifier.column(), arguments};
 }
 
@@ -109,11 +119,11 @@ ast::ExpressionNode Parser::parseExpression() {
     std::vector<token::Token> expressionTokens;
 
     while (currentToken().type() != token::TokenType::SEMICOLON && currentToken().type() != token::TokenType::SEPARATOR) {
-        expressionTokens.push_back(advance());
-
-        if (currentToken().type() == token::TokenType::IDENTIFIER && peek().type() == token::TokenType::OPEN_PAREN) {
+        if (!atEnd() && currentToken().type() == token::TokenType::IDENTIFIER && peek().type() == token::TokenType::OPEN_PAREN) {
             token::FunctionCallToken functionCall = parseFunctionCall();
             expressionTokens.push_back(functionCall);
+        } else {
+            expressionTokens.push_back(advance());
         }
     }
 
@@ -125,6 +135,6 @@ ast::ExpressionNode Parser::parseExpression() {
 
 void Parser::expect(token::TokenType type) {
     if (advance().type() != type) {
-        throw std::runtime_error("Unexpected token");
+        throw std::runtime_error("Parser expected one token type, but got another");
     }
 }

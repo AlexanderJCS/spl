@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <utility>
 #include <memory>
+#include <iostream>
 
 const token::Token& ast::ASTNode::token() const {
     return nodeToken;
@@ -64,8 +65,10 @@ std::variant<int, float, std::string> ast::ExpressionNode::eval(env::Environment
             return env.get(nodeToken.value());
         } else if (nodeToken.type() == token::TokenType::LITERAL_INT) {
             return std::stoi(nodeToken.value());
+        } else if (nodeToken.type() == token::TokenType::FUNCTION_CALL) {
+            std::cout << "uh oh...";
         } else {
-            throw std::runtime_error("Unexpected token");
+            throw std::runtime_error("Unexpected token when evaluating expression");
         }
     } else {
         std::variant<int, float, std::string> left = nodeChildren[0]->eval(env);
@@ -104,18 +107,24 @@ std::variant<int, float, std::string> ast::ExpressionNode::eval(env::Environment
                 throw std::runtime_error("Invalid types for division");
             }
         } else {
-            throw std::runtime_error("Unexpected token");
+            throw std::runtime_error("Unexpected token when evaluating expression");
         }
     }
 }
 
 ast::ExpressionNode::ExpressionNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
-    : ASTNode(std::move(token), std::move(children)) {}
+    : ASTNode(std::move(token), std::move(children)) {
+    std::cout << "expression node created";
+}
 
 ast::FunctionCallNode::FunctionCallNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children) : ExpressionNode(
-        token, children) {}
+        token, children) {
+    std::cout << "function call node created";
+}
 
 env::VariantType ast::FunctionCallNode::eval(env::Environment& env) const {
+    std::cout << "hi";
+
     std::string functionName = nodeToken.value();
 
     if (env.getType(functionName) != "function") {

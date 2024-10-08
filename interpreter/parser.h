@@ -18,7 +18,7 @@ private:
     ast::RootNode parse();
 
     /**
-     * Checks if the parser is at the end of the input.
+     * Checks if the parser is at the end of the input (pos >= the size of tokens).
      * @return True if the parser is at the end of the input, false otherwise
      */
     [[nodiscard]] bool atEnd() const;
@@ -60,7 +60,7 @@ private:
     ast::ExpressionNode parseExpression();
 
     /**
-     * Checks if the current token is of the expected type. Throws an exception if it is not.
+     * Checks if the current token is of the expected type. Throws an exception if it is not. Also advances the parser.
      *
      * @throws std::runtime_error if the current token is not of the expected type
      * @param type The expected type of the token
