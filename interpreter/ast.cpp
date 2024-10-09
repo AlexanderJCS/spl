@@ -117,9 +117,10 @@ ast::ExpressionNode::ExpressionNode(token::Token token, std::vector<std::shared_
     std::cout << "expression node created";
 }
 
-ast::FunctionCallNode::FunctionCallNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children) : ExpressionNode(
-        token, children) {
-    std::cout << "function call node created";
+ast::FunctionCallNode::FunctionCallNode(const token::FunctionCallToken& token) : ExpressionNode(token, {}) {
+    for (const ast::ExpressionNode& argument : token.arguments()) {
+        nodeChildren.push_back(std::make_shared<ast::ExpressionNode>(argument));
+    }
 }
 
 env::VariantType ast::FunctionCallNode::eval(env::Environment& env) const {

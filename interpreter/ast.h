@@ -88,7 +88,7 @@ namespace ast {
          * @param token The token of the node. Should be an identifier and contain the name of the function.
          * @param children The arguments to the function. Each child should be an ExpressionNode.
          */
-        explicit FunctionCallNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
+        explicit FunctionCallNode(const token::FunctionCallToken& token);
 
         env::VariantType eval(env::Environment& env) const override;
     };
