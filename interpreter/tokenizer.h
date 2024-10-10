@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <memory>
 
 namespace ast {
     class ExpressionNode;  // Forward declaration of ast::ExpressionNode
@@ -92,18 +93,17 @@ namespace token {
      * passed to the Shunting Yard Parser.
      */
     class FunctionCallToken : public Token {
-        // todo: this implementation by creating a function token and token class is not ideal but it works
-        // todo: finish implementation
     public:
-        FunctionCallToken(const std::string& functionName, size_t line, size_t column, std::vector<ast::ExpressionNode> arguments);
+        FunctionCallToken(const std::string &functionName, size_t line, size_t column,
+                          std::vector<std::shared_ptr<ast::ExpressionNode>> arguments);
+
         ~FunctionCallToken() override = default;
 
-        [[nodiscard]] std::vector<ast::ExpressionNode> arguments() const;
+        [[nodiscard]] std::vector<std::shared_ptr<ast::ExpressionNode>> arguments() const;
 
     private:
-        std::vector<ast::ExpressionNode> functionArguments;
+        std::vector<std::shared_ptr<ast::ExpressionNode>> functionArguments;
     };
-
     class Tokenizer {
     public:
         explicit Tokenizer(const std::string& input);

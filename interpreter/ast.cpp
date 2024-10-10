@@ -52,7 +52,7 @@ std::variant<int, float, std::string> ast::DeclarationNode::eval(env::Environmen
 ast::DeclarationNode::DeclarationNode(std::vector<std::shared_ptr<ASTNode>> children)
     : ASTNode(token::Token(), std::move(children)) {}
 
-std::variant<int, float, std::string> ast::StatementNode::eval(env::Environment &env) const {
+std::variant<int, float, std::string> ast::StatementNode::eval(env::Environment& env) const {
     return -1;  // not implemented
 }
 
@@ -110,6 +110,8 @@ std::variant<int, float, std::string> ast::ExpressionNode::eval(env::Environment
             throw std::runtime_error("Unexpected token when evaluating expression");
         }
     }
+
+    return {};
 }
 
 ast::ExpressionNode::ExpressionNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
@@ -118,8 +120,8 @@ ast::ExpressionNode::ExpressionNode(token::Token token, std::vector<std::shared_
 }
 
 ast::FunctionCallNode::FunctionCallNode(const token::FunctionCallToken& token) : ExpressionNode(token, {}) {
-    for (const ast::ExpressionNode& argument : token.arguments()) {
-        nodeChildren.push_back(std::make_shared<ast::ExpressionNode>(argument));
+    for (const std::shared_ptr<ast::ExpressionNode>& argument : token.arguments()) {
+        nodeChildren.push_back(std::static_pointer_cast<ast::ExpressionNode>(argument));
     }
 }
 

@@ -137,10 +137,11 @@ std::vector<token::Token> token::Tokenizer::getTokens() const {
     return tokens;
 }
 
-token::FunctionCallToken::FunctionCallToken(const std::string& functionName, size_t line, size_t column, std::vector<ast::ExpressionNode> arguments)
-    : Token(TokenType::FUNCTION_CALL,functionName, line, column),
-            functionArguments(std::move(arguments)) {}
+token::FunctionCallToken::FunctionCallToken(const std::string& functionName, size_t line, size_t column,
+                                            std::vector<std::shared_ptr<ast::ExpressionNode>> arguments)
+        : Token(TokenType::FUNCTION_CALL, functionName, line, column), functionArguments(std::move(arguments)) {
+}
 
-std::vector<ast::ExpressionNode> token::FunctionCallToken::arguments() const {
+std::vector<std::shared_ptr<ast::ExpressionNode>> token::FunctionCallToken::arguments() const {
     return functionArguments;
 }

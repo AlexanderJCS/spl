@@ -9,15 +9,17 @@
 #include <iostream>
 
 
-ShuntingYardParser::ShuntingYardParser(std::vector<token::Token> input)
+ShuntingYardParser::ShuntingYardParser(std::vector<std::shared_ptr<token::Token>> input)
     : tokens(std::move(input)), astRoot(parse()) {}
 
 
-ast::ExpressionNode ShuntingYardParser::parse() const {
+std::shared_ptr<ast::ExpressionNode> ShuntingYardParser::parse() const {
     std::stack<token::Token> operatorStack;
-    std::stack<ast::ExpressionNode> operandStack;
+    std::stack<std::shared_ptr<ast::ExpressionNode>> operandStack;
 
-    for (const token::Token& token : tokens) {
+    for (const std::shared_ptr<token::Token>& tokenPtr : tokens) {
+        token::Token token = *tokenPtr;
+
         switch (token.type()) {
             case token::TokenType::IDENTIFIER:
             case token::TokenType::LITERAL_INT:
@@ -64,23 +66,21 @@ ast::ExpressionNode ShuntingYardParser::parse() const {
                 break;
 
             case token::TokenType::FUNCTION_CALL: {
-                std::cout << "Token type: " << typeid(token).name() << std::endl;
-
-                const auto *functionCallTokenPtr = dynamic_cast<const token::FunctionCallToken*>(&token);
+                std::shared_ptr<token::FunctionCallToken> functionCallTokenPtr = std::dynamic_pointer_cast<token::FunctionCallToken>(tokenPtr);
 
                 if (!functionCallTokenPtr) {
                     throw std::runtime_error("Error: expected FunctionCallToken but got something else");
                 }
 
-                const auto& functionCallToken = *functionCallTokenPtr;
+                const token::FunctionCallToken& functionCallToken = *functionCallTokenPtr;
 
-                operandStack.push(ast::FunctionCallNode{functionCallToken});
+                operandStack.push(std::make_shared<ast::FunctionCallNode>(ast::FunctionCallNode{functionCallToken}));
                 break;
             }
 
             // default case: the token is not an operator
             default:
-                operandStack.push(ast::ExpressionNode{token, {}});
+                operandStack.push(std::make_shared<ast::ExpressionNode>(ast::ExpressionNode{token, {}}));
                 break;
         }
     }
@@ -93,13 +93,13 @@ ast::ExpressionNode ShuntingYardParser::parse() const {
     return operandStack.top();
 }
 
-const ast::ExpressionNode& ShuntingYardParser::root() const {
+std::shared_ptr<ast::ExpressionNode> ShuntingYardParser::root() const {
     return astRoot;
 }
 
-void ShuntingYardParser::addNode(std::stack<ast::ExpressionNode>& operandStack, const token::Token& token) {
+void ShuntingYardParser::addNode(std::stack<std::shared_ptr<ast::ExpressionNode>>& operandStack, const token::Token& token) {
     if (token.type() == token::TokenType::IDENTIFIER || token.type() == token::TokenType::LITERAL_INT) {
-        operandStack.push(ast::ExpressionNode{token, {}});
+        operandStack.push(std::make_shared<ast::ExpressionNode>(ast::ExpressionNode{token, {}}));
     } if (token.type() == token::TokenType::FUNCTION_CALL) {
         // Assuming token is a pointer or reference to token::Token
         const auto* functionCallTokenPtr = dynamic_cast<const token::FunctionCallToken*>(&token);
@@ -110,16 +110,16 @@ void ShuntingYardParser::addNode(std::stack<ast::ExpressionNode>& operandStack, 
 
         const auto& functionCallToken = *functionCallTokenPtr;
 
-        operandStack.push(ast::FunctionCallNode{functionCallToken});
+        operandStack.push(std::make_shared<ast::FunctionCallNode>(ast::FunctionCallNode{functionCallToken}));
     } else {
-        ast::ExpressionNode right = operandStack.top();
+        std::shared_ptr<ast::ExpressionNode> right = operandStack.top();
         operandStack.pop();
-        ast::ExpressionNode left = operandStack.top();
+        std::shared_ptr<ast::ExpressionNode> left = operandStack.top();
         operandStack.pop();
 
-        std::shared_ptr<ast::ASTNode> leftPtr = std::make_shared<ast::ExpressionNode>(left);
-        std::shared_ptr<ast::ASTNode> rightPtr = std::make_shared<ast::ExpressionNode>(right);
+        std::shared_ptr<ast::ASTNode> leftPtr = std::static_pointer_cast<ast::ASTNode>(left);
+        std::shared_ptr<ast::ASTNode> rightPtr = std::static_pointer_cast<ast::ASTNode>(right);
 
-        operandStack.push(ast::ExpressionNode{token, {leftPtr, rightPtr}});
+        operandStack.push(std::make_shared<ast::ExpressionNode>(ast::ExpressionNode{token, {leftPtr, rightPtr}}));
     }
 }

@@ -51,13 +51,13 @@ private:
      * Parses a declaration
      * @return The root of the declaration tree
      */
-    ast::DeclarationNode parseDeclaration();
+    std::shared_ptr<ast::DeclarationNode> parseDeclaration();
 
     /**
      * Parses an expression using the shunting yard algorithm.
      * @return The root of the expression tree
      */
-    ast::ExpressionNode parseExpression();
+    std::shared_ptr<ast::ExpressionNode> parseExpression();
 
     /**
      * Checks if the current token is of the expected type. Throws an exception if it is not. Also advances the parser.

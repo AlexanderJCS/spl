@@ -57,13 +57,13 @@ std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
     if (currentToken().type() == token::TokenType::SEMICOLON) {
         advance();  // skip
     } else if (currentToken().type() == token::TokenType::IDENTIFIER && peek().type() == token::TokenType::OPERATOR_DEFINE) {
-        ast::DeclarationNode declaration = parseDeclaration();
-        std::shared_ptr<ast::ASTNode> declarationNode = std::make_shared<ast::DeclarationNode>(declaration);
+        std::shared_ptr<ast::DeclarationNode> declaration = parseDeclaration();
+        std::shared_ptr<ast::ASTNode> declarationNode = std::static_pointer_cast<ast::ASTNode>(declaration);
 
         return declarationNode;
     } else if (currentToken().type() == token::TokenType::IDENTIFIER || currentToken().type() == token::TokenType::LITERAL_INT) {
-        ast::ExpressionNode expression = parseExpression();
-        std::shared_ptr<ast::ASTNode> expressionNode = std::make_shared<ast::ExpressionNode>(expression);
+        std::shared_ptr<ast::ExpressionNode> expression = parseExpression();
+        std::shared_ptr<ast::ASTNode> expressionNode = std::static_pointer_cast<ast::ASTNode>(expression);
 
         return expressionNode;
     } else if (currentToken().type() == token::TokenType::FUNCTION_CALL) {
@@ -76,7 +76,7 @@ std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
 }
 
 
-ast::DeclarationNode Parser::parseDeclaration() {
+std::shared_ptr<ast::DeclarationNode> Parser::parseDeclaration() {
     token::Token identifier = advance();
     token::Token nextToken = advance();
 
@@ -87,14 +87,14 @@ ast::DeclarationNode Parser::parseDeclaration() {
     };
 
     if (nextToken.type() == token::TokenType::OPERATOR_DEFINE) {
-        ast::ExpressionNode expression = parseExpression();
-        std::shared_ptr<ast::ASTNode> expressionPtr = std::make_shared<ast::ExpressionNode>(expression);
+        std::shared_ptr<ast::ExpressionNode> expression = parseExpression();
+        std::shared_ptr<ast::ASTNode> expressionPtr = std::static_pointer_cast<ast::ASTNode>(expression);
 
         declaration.children().push_back(expressionPtr);
     }
 
     expect(token::TokenType::SEMICOLON);
-    return declaration;
+    return std::make_shared<ast::DeclarationNode>(declaration);
 }
 
 
@@ -102,7 +102,7 @@ token::FunctionCallToken Parser::parseFunctionCall() {
     token::Token identifier = advance();
     expect(token::TokenType::OPEN_PAREN);
 
-    std::vector<ast::ExpressionNode> arguments;
+    std::vector<std::shared_ptr<ast::ExpressionNode>> arguments;
 
     while (currentToken().type() != token::TokenType::CLOSE_PAREN) {
         arguments.push_back(parseExpression());
@@ -115,15 +115,15 @@ token::FunctionCallToken Parser::parseFunctionCall() {
 }
 
 
-ast::ExpressionNode Parser::parseExpression() {
-    std::vector<token::Token> expressionTokens;
+std::shared_ptr<ast::ExpressionNode> Parser::parseExpression() {
+    std::vector<std::shared_ptr<token::Token>> expressionTokens;
 
     while (currentToken().type() != token::TokenType::SEMICOLON && currentToken().type() != token::TokenType::SEPARATOR) {
         if (!atEnd() && currentToken().type() == token::TokenType::IDENTIFIER && peek().type() == token::TokenType::OPEN_PAREN) {
             token::FunctionCallToken functionCall = parseFunctionCall();
-            expressionTokens.push_back(functionCall);
+            expressionTokens.push_back(std::make_shared<token::FunctionCallToken>(functionCall));
         } else {
-            expressionTokens.push_back(advance());
+            expressionTokens.push_back(std::make_shared<token::Token>(advance()));
         }
     }
 
