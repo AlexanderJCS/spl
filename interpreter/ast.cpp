@@ -56,8 +56,8 @@ std::variant<int, float, std::string> ast::StatementNode::eval(env::Environment&
     return -1;  // not implemented
 }
 
-ast::StatementNode::StatementNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
-    : ASTNode(std::move(token), std::move(children)) {}
+ast::StatementNode::StatementNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children)
+    : ASTNode(token, std::move(children)) {}
 
 std::variant<int, float, std::string> ast::ExpressionNode::eval(env::Environment& env) const {
     if (nodeChildren.empty()) {
@@ -66,7 +66,8 @@ std::variant<int, float, std::string> ast::ExpressionNode::eval(env::Environment
         } else if (nodeToken.type() == token::TokenType::LITERAL_INT) {
             return std::stoi(nodeToken.value());
         } else if (nodeToken.type() == token::TokenType::FUNCTION_CALL) {
-            std::cout << "uh oh...";
+            // not sure how you got here... but just in case
+            throw std::runtime_error("Function calls should be handled by FunctionCallNode");
         } else {
             throw std::runtime_error("Unexpected token when evaluating expression");
         }
@@ -114,10 +115,8 @@ std::variant<int, float, std::string> ast::ExpressionNode::eval(env::Environment
     return {};
 }
 
-ast::ExpressionNode::ExpressionNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
-    : ASTNode(std::move(token), std::move(children)) {
-    std::cout << "expression node created";
-}
+ast::ExpressionNode::ExpressionNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children)
+    : ASTNode(token, std::move(children)) {}
 
 ast::FunctionCallNode::FunctionCallNode(const token::FunctionCallToken& token) : ExpressionNode(token, {}) {
     for (const std::shared_ptr<ast::ExpressionNode>& argument : token.arguments()) {
@@ -126,8 +125,6 @@ ast::FunctionCallNode::FunctionCallNode(const token::FunctionCallToken& token) :
 }
 
 env::VariantType ast::FunctionCallNode::eval(env::Environment& env) const {
-    std::cout << "hi";
-
     std::string functionName = nodeToken.value();
 
     if (env.getType(functionName) != "function") {

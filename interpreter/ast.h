@@ -66,7 +66,7 @@ namespace ast {
     class StatementNode : public ASTNode {
     public:
         StatementNode() = default;
-        explicit StatementNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
+        explicit StatementNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children);
 
         env::VariantType eval(env::Environment& env) const override;
     };
@@ -74,7 +74,7 @@ namespace ast {
     class ExpressionNode : public ASTNode {
     public:
         ExpressionNode() = default;
-        explicit ExpressionNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
+        explicit ExpressionNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children);
 
         env::VariantType eval(env::Environment& env) const override;
     };
