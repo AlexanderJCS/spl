@@ -26,7 +26,7 @@ ast::ASTNode::ASTNode() : lineAt(-1), columnAt(-1) {}
 ast::ASTNode::ASTNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
     : nodeToken(std::move(token)), nodeChildren(std::move(children)), lineAt(-1), columnAt(-1) {}
 
-std::variant<int, float, std::string> ast::RootNode::eval(env::Environment &env) const {
+env::VariantType ast::RootNode::eval(env::Environment &env) const {
     for (std::shared_ptr<ast::ASTNode> child : nodeChildren) {
         child->eval(env);
     }
@@ -39,10 +39,10 @@ ast::RootNode::RootNode(const std::vector<std::shared_ptr<ASTNode>> &children) {
 }
 
 
-std::variant<int, float, std::string> ast::DeclarationNode::eval(env::Environment &env) const {
+env::VariantType ast::DeclarationNode::eval(env::Environment &env) const {
     token::Token typeSpecifier = nodeToken;
     token::Token identifier = nodeChildren[0]->token();
-    std::variant<int, float, std::string> value = nodeChildren[1]->eval(env);
+    env::VariantType value = nodeChildren[1]->eval(env);
 
     env.set(identifier.value(), value);
 
@@ -52,14 +52,14 @@ std::variant<int, float, std::string> ast::DeclarationNode::eval(env::Environmen
 ast::DeclarationNode::DeclarationNode(std::vector<std::shared_ptr<ASTNode>> children)
     : ASTNode(token::Token(), std::move(children)) {}
 
-std::variant<int, float, std::string> ast::StatementNode::eval(env::Environment& env) const {
+env::VariantType ast::StatementNode::eval(env::Environment& env) const {
     return -1;  // not implemented
 }
 
 ast::StatementNode::StatementNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children)
     : ASTNode(token, std::move(children)) {}
 
-std::variant<int, float, std::string> ast::ExpressionNode::eval(env::Environment& env) const {
+env::VariantType ast::ExpressionNode::eval(env::Environment& env) const {
     if (nodeChildren.empty()) {
         if (nodeToken.type() == token::TokenType::IDENTIFIER) {
             return env.get(nodeToken.value());
@@ -72,8 +72,8 @@ std::variant<int, float, std::string> ast::ExpressionNode::eval(env::Environment
             throw std::runtime_error("Unexpected token when evaluating expression");
         }
     } else {
-        std::variant<int, float, std::string> left = nodeChildren[0]->eval(env);
-        std::variant<int, float, std::string> right = nodeChildren[1]->eval(env);
+        env::VariantType left = nodeChildren[0]->eval(env);
+        env::VariantType right = nodeChildren[1]->eval(env);
 
         if (nodeToken.type() == token::TokenType::OPERATOR_ADD) {
             if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
@@ -134,4 +134,20 @@ env::VariantType ast::FunctionCallNode::eval(env::Environment& env) const {
     // todo: implement the function call
 
     return {};  // should return the return value of the function
+}
+
+env::VariantType ast::FunctionDefNode::eval(env::Environment& env) const {
+    env.set(nodeToken.value(), functionBody);
+
+    return {};
+}
+
+ast::FunctionDefNode::FunctionDefNode(token::Token identifier, std::vector<std::string> args, std::shared_ptr<ASTNode> body) {
+    if (identifier.type() != token::TokenType::IDENTIFIER) {
+        throw std::runtime_error("FunctionDefNode must be constructed with an identifier token");
+    }
+
+    nodeToken = std::move(identifier);
+    arguments = std::move(args);
+    functionBody = std::move(body);
 }

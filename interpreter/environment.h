@@ -5,11 +5,21 @@
 #include <string>
 #include <optional>
 #include <unordered_map>
+#include <memory>
+
+// Forward declarations
+namespace ast {
+    class ASTNode;
+}
+
+namespace env {
+    using VariantType = std::variant<int, float, std::string, std::shared_ptr<ast::ASTNode>>;
+}
 
 #include "ast.h"
 
 namespace env {
-    using VariantType = std::variant<int, float, std::string>;
+    using VariantType = std::variant<int, float, std::string, std::shared_ptr<ast::ASTNode>>;
 
     class Environment {
     public:
@@ -35,6 +45,7 @@ namespace env {
          * - "int"
          * - "float"
          * - "string"
+         * - "ast" (an ast::ASTNode shared_ptr. Used for function definitions)
          *
          * @throws std::runtime_error if the variable is not in the environment
          * @param name The name of the variable

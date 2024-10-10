@@ -6,7 +6,7 @@
 
 class Parser {
 public:
-    Parser(std::vector<token::Token> input);
+    explicit Parser(std::vector<token::Token> input);
 
     [[nodiscard]] ast::RootNode root() const;
 
@@ -59,6 +59,14 @@ private:
      */
     std::shared_ptr<ast::ExpressionNode> parseExpression();
 
+    std::shared_ptr<ast::FunctionDefNode> parseFuncDeclaration();
+
+    /**
+     * Parses a function call. Assumes the current token is the function name/identifier.
+     * @return The function call pseudo-token
+     */
+    token::FunctionCallToken parseFunctionCall();
+
     /**
      * Checks if the current token is of the expected type. Throws an exception if it is not. Also advances the parser.
      *
@@ -66,12 +74,6 @@ private:
      * @param type The expected type of the token
      */
     void expect(token::TokenType type);
-
-    /**
-     * Parses a function call. Assumes the current token is the function name/identifier.
-     * @return The function call pseudo-token
-     */
-    token::FunctionCallToken parseFunctionCall();
 
     ast::RootNode astRoot;
     std::vector<token::Token> tokens;

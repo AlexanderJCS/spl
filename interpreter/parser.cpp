@@ -66,8 +66,11 @@ std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
         std::shared_ptr<ast::ASTNode> expressionNode = std::static_pointer_cast<ast::ASTNode>(expression);
 
         return expressionNode;
-    } else if (currentToken().type() == token::TokenType::FUNCTION_CALL) {
-        // hi mom!
+    } else if (currentToken().type() == token::TokenType::FUNCTION_DEF) {
+        std::shared_ptr<ast::FunctionDefNode> functionDef = parseFuncDeclaration();
+        std::shared_ptr<ast::ASTNode> functionDefNode = std::static_pointer_cast<ast::ASTNode>(functionDef);
+
+        return functionDefNode;
     } else {
         throw std::runtime_error("Could not determine how to parse a statement from the current token");
     }
@@ -137,4 +140,53 @@ void Parser::expect(token::TokenType type) {
     if (advance().type() != type) {
         throw std::runtime_error("Parser expected one token type, but got another");
     }
+}
+
+std::shared_ptr<ast::FunctionDefNode> Parser::parseFuncDeclaration() {
+    advance();  // skip the function keyword
+    token::Token identifier = advance();
+    expect(token::TokenType::OPEN_PAREN);
+
+    std::vector<std::string> arguments;
+
+    while (currentToken().type() != token::TokenType::CLOSE_PAREN) {
+        switch (currentToken().type()) {
+            case token::TokenType::IDENTIFIER:
+                arguments.push_back(currentToken().value());
+                break;
+            case token::TokenType::SEPARATOR:
+                break;  // do nothing
+            default:
+                throw std::runtime_error("Unexpected token in function declaration");
+        }
+    }
+
+    expect(token::TokenType::CLOSE_PAREN);  // should be true because of the while loop
+    expect(token::TokenType::OPEN_BRACE);
+
+    // get all tokens within the curly braces and create a parser for them
+    std::vector<token::Token> functionTokens;
+    int braceCount = 1;
+
+    while (braceCount > 0) {
+        token::Token token = advance();
+
+        if (token.type() == token::TokenType::OPEN_BRACE) {
+            braceCount++;
+        } else if (token.type() == token::TokenType::CLOSE_BRACE) {
+            braceCount--;
+        }
+
+        if (braceCount > 0) {
+            functionTokens.push_back(token);
+        }
+    }
+
+    Parser functionParser{functionTokens};
+
+    return std::make_shared<ast::FunctionDefNode>(ast::FunctionDefNode{
+        identifier,
+        arguments,
+        std::static_pointer_cast<ast::ASTNode>(std::make_shared<ast::RootNode>(functionParser.parse()))
+    });
 }

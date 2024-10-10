@@ -6,11 +6,17 @@
 #include <memory>
 #include <vector>
 
-// forward declaration
+// Forward declarations
 namespace env {
-    using VariantType = std::variant<int, float, std::string>;
-
     class Environment;
+}
+
+namespace ast {
+    class ASTNode;
+}
+
+namespace env {
+    using VariantType = std::variant<int, float, std::string, std::shared_ptr<ast::ASTNode>>;
 }
 
 namespace token {
@@ -61,6 +67,17 @@ namespace ast {
         explicit DeclarationNode(std::vector<std::shared_ptr<ASTNode>> children);
 
         env::VariantType eval(env::Environment& env) const override;
+    };
+
+    class FunctionDefNode : public ASTNode {
+    public:
+        explicit FunctionDefNode(token::Token identifier, std::vector<std::string> args, std::shared_ptr<ASTNode> body);
+
+        env::VariantType eval(env::Environment& env) const override;
+
+    private:
+        std::vector<std::string> arguments;
+        std::shared_ptr<ASTNode> functionBody;
     };
 
     class StatementNode : public ASTNode {

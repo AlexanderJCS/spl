@@ -44,6 +44,8 @@ std::string env::Environment::getType(const std::string& name) const {
             return "float";
         } else if constexpr (std::is_same_v<T, std::string>) {
             return "string";
+        } else if constexpr (std::is_same<T, std::shared_ptr<ast::ASTNode>>::value) {
+            return "ast";
         } else {
             throw std::runtime_error("Unknown type");
         }
