@@ -100,7 +100,7 @@ std::shared_ptr<ast::ExpressionNode> ShuntingYardParser::root() const {
 void ShuntingYardParser::addNode(std::stack<std::shared_ptr<ast::ExpressionNode>>& operandStack, const token::Token& token) {
     if (token.type() == token::TokenType::IDENTIFIER || token.type() == token::TokenType::LITERAL_INT) {
         operandStack.push(std::make_shared<ast::ExpressionNode>(ast::ExpressionNode{token, {}}));
-    } if (token.type() == token::TokenType::FUNCTION_CALL) {
+    } else if (token.type() == token::TokenType::FUNCTION_CALL) {
         // Assuming token is a pointer or reference to token::Token
         const auto* functionCallTokenPtr = dynamic_cast<const token::FunctionCallToken*>(&token);
 
