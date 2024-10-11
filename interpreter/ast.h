@@ -31,7 +31,7 @@ namespace ast {
     class ASTNode {
     public:
         ASTNode();
-        ASTNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children);
+        ASTNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children);
 
         [[nodiscard]] const token::Token& token() const;
 
@@ -71,7 +71,7 @@ namespace ast {
 
     class FunctionDefNode : public ASTNode {
     public:
-        explicit FunctionDefNode(token::Token identifier, std::vector<std::string> args, std::shared_ptr<ASTNode> body);
+        explicit FunctionDefNode(const token::Token& identifier, std::vector<std::string> args, std::shared_ptr<ASTNode> body);
 
         env::VariantType eval(env::Environment& env) const override;
 

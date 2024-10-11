@@ -187,6 +187,6 @@ std::shared_ptr<ast::FunctionDefNode> Parser::parseFuncDeclaration() {
     return std::make_shared<ast::FunctionDefNode>(ast::FunctionDefNode{
         identifier,
         arguments,
-        std::static_pointer_cast<ast::ASTNode>(std::make_shared<ast::RootNode>(functionParser.parse()))
+        std::static_pointer_cast<ast::ASTNode>(std::make_shared<ast::RootNode>(functionParser.root()))
     });
 }

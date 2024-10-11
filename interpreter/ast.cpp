@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include <utility>
 #include <memory>
-#include <iostream>
 
 const token::Token& ast::ASTNode::token() const {
     return nodeToken;
@@ -23,11 +22,11 @@ int ast::ASTNode::column() const {
 
 ast::ASTNode::ASTNode() : lineAt(-1), columnAt(-1) {}
 
-ast::ASTNode::ASTNode(token::Token token, std::vector<std::shared_ptr<ASTNode>> children)
-    : nodeToken(std::move(token)), nodeChildren(std::move(children)), lineAt(-1), columnAt(-1) {}
+ast::ASTNode::ASTNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children)
+    : nodeToken(token), nodeChildren(std::move(children)), lineAt(-1), columnAt(-1) {}
 
-env::VariantType ast::RootNode::eval(env::Environment &env) const {
-    for (std::shared_ptr<ast::ASTNode> child : nodeChildren) {
+env::VariantType ast::RootNode::eval(env::Environment& env) const {
+    for (const std::shared_ptr<ast::ASTNode>& child : nodeChildren) {
         child->eval(env);
     }
 
@@ -127,11 +126,13 @@ ast::FunctionCallNode::FunctionCallNode(const token::FunctionCallToken& token) :
 env::VariantType ast::FunctionCallNode::eval(env::Environment& env) const {
     std::string functionName = nodeToken.value();
 
-    if (env.getType(functionName) != "function") {
+    if (env.getType(functionName) != "ast") {
         throw std::runtime_error("Function " + functionName + " is not a function");
     }
 
-    // todo: implement the function call
+    std::shared_ptr<ast::ASTNode> functionBody = std::get<std::shared_ptr<ast::ASTNode>>(env.get(functionName));
+
+    functionBody->eval(env);
 
     return {};  // should return the return value of the function
 }
@@ -142,12 +143,12 @@ env::VariantType ast::FunctionDefNode::eval(env::Environment& env) const {
     return {};
 }
 
-ast::FunctionDefNode::FunctionDefNode(token::Token identifier, std::vector<std::string> args, std::shared_ptr<ASTNode> body) {
+ast::FunctionDefNode::FunctionDefNode(const token::Token& identifier, std::vector<std::string> args, std::shared_ptr<ASTNode> body) {
     if (identifier.type() != token::TokenType::IDENTIFIER) {
         throw std::runtime_error("FunctionDefNode must be constructed with an identifier token");
     }
 
-    nodeToken = std::move(identifier);
+    nodeToken = identifier;
     arguments = std::move(args);
     functionBody = std::move(body);
 }
