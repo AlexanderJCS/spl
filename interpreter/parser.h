@@ -59,6 +59,10 @@ private:
      */
     std::shared_ptr<ast::ExpressionNode> parseExpression();
 
+    /**
+     * Parses a function declaration. Assumes the current token is the function name/identifier.
+     * @return The root of the function declaration tree
+     */
     std::shared_ptr<ast::FunctionDefNode> parseFuncDeclaration();
 
     /**
