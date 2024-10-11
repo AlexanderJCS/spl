@@ -43,7 +43,7 @@ private:
 
     /**
      * Parses a generalized statement.
-     * @return The root of the statement tree
+     * @return The root of the statement tree. nullptr if the statement cannot be parsed
      */
     std::shared_ptr<ast::ASTNode> parseStatement();
 

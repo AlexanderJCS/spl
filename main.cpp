@@ -6,7 +6,7 @@
 #include "interpreter/ast.h"
 
 int main() {
-    std::string input = "fun x() {b = 3;} x();";
+    std::string input = "fun x(a) {b=a;} x(5);";
     env::Environment env = run(input);
 
     auto x = std::get<std::shared_ptr<ast::ASTNode>>(env.get("x"));

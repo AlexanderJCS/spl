@@ -17,7 +17,11 @@ ast::RootNode Parser::parse() {
     ast::RootNode root;
 
     while (!atEnd()) {
-        root.children().push_back(parseStatement());
+        std::shared_ptr<ast::ASTNode> statement = parseStatement();
+
+        if (statement != nullptr) {
+            root.children().push_back(statement);
+        }
     }
 
     return root;
