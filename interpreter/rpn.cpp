@@ -14,11 +14,25 @@ ShuntingYardParser::ShuntingYardParser(std::vector<std::shared_ptr<token::Token>
 
 
 std::shared_ptr<ast::ExpressionNode> ShuntingYardParser::parse() const {
+    // quick input validation: ensure that there are as many open parens as close parens
+    int parenCount = 0;
+    for (const std::shared_ptr<token::Token>& tokenPtr : tokens) {
+        if (tokenPtr->type() == token::TokenType::OPEN_PAREN) {
+            parenCount++;
+        } else if (tokenPtr->type() == token::TokenType::CLOSE_PAREN) {
+            parenCount--;
+        }
+    }
+
+    if (parenCount != 0) {
+        throw std::runtime_error("Error: mismatched parentheses");
+    }
+
     std::stack<token::Token> operatorStack;
     std::stack<std::shared_ptr<ast::ExpressionNode>> operandStack;
 
     for (const std::shared_ptr<token::Token>& tokenPtr : tokens) {
-        token::Token token = *tokenPtr;
+        const token::Token& token = *tokenPtr;
 
         switch (token.type()) {
             case token::TokenType::IDENTIFIER:

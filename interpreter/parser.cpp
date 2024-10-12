@@ -117,7 +117,6 @@ token::FunctionCallToken Parser::parseFunctionCall() {
 
     expect(token::TokenType::CLOSE_PAREN);
 
-
     return token::FunctionCallToken{identifier.value(), identifier.line(), identifier.column(), arguments};
 }
 

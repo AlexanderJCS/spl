@@ -6,7 +6,10 @@
 #include "interpreter/ast.h"
 
 int main() {
-    std::string input = "fun x(a) {b=a;} x(5);";
+    // todo: function calls need a comma at the end of the argument list so the ) token doesn't go into the RPN
+    //  parser. This is currently intended behavior but instead should be changed to allow for no comma at the end of
+    //  the argument list.
+    std::string input = "fun x(a) {b=a;} x(5,);";
     env::Environment env = run(input);
 
     auto x = std::get<std::shared_ptr<ast::ASTNode>>(env.get("x"));
