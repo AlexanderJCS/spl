@@ -132,7 +132,24 @@ env::VariantType ast::FunctionCallNode::eval(env::Environment& env) const {
 
     std::shared_ptr<ast::ASTNode> functionBody = std::get<std::shared_ptr<ast::ASTNode>>(env.get(functionName));
 
-    functionBody->eval(env);
+    env::Environment functionScope{env};
+
+    // set the arguments in the new environment
+    for (const std::shared_ptr<ASTNode>& child : nodeChildren) {
+        // cast to ExpressionNode. We can assume that the children of a FunctionCallNode are ExpressionNodes
+        //  because that's what's passed in the constructor
+        std::shared_ptr<ast::ExpressionNode> expressionNode = std::static_pointer_cast<ast::ExpressionNode>(child);
+
+        // just in case it's not an expression node
+        if (!expressionNode) {
+            throw std::runtime_error("Function call arguments must be expression nodes");
+        }
+
+        // eval() does not use the functionScope because it's in the outer scope, not the function scope
+        functionScope.set(expressionNode->token().value(), expressionNode->eval(env));
+    }
+
+    functionBody->eval(functionScope);
 
     return {};  // should return the return value of the function
 }
