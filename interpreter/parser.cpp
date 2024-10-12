@@ -163,6 +163,8 @@ std::shared_ptr<ast::FunctionDefNode> Parser::parseFuncDeclaration() {
             default:
                 throw std::runtime_error("Unexpected token in function declaration");
         }
+
+        advance();
     }
 
     expect(token::TokenType::CLOSE_PAREN);  // should be true because of the while loop
