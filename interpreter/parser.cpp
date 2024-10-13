@@ -114,6 +114,12 @@ token::FunctionCallToken Parser::parseFunctionCall() {
 
     while (currentToken().type() != token::TokenType::CLOSE_PAREN) {
         arguments.push_back(parseExpression());
+
+        // supports syntax like funcCall(arg1) instead of funcCall(arg1,)
+        if (currentToken().type() == token::TokenType::CLOSE_PAREN) {
+            break;
+        }
+
         advance();  // skip the comma
     }
 
@@ -126,7 +132,18 @@ token::FunctionCallToken Parser::parseFunctionCall() {
 std::shared_ptr<ast::ExpressionNode> Parser::parseExpression() {
     std::vector<std::shared_ptr<token::Token>> expressionTokens;
 
+    int parenCount = 0;
     while (currentToken().type() != token::TokenType::SEMICOLON && currentToken().type() != token::TokenType::SEPARATOR) {
+        if (currentToken().type() == token::TokenType::OPEN_PAREN) {
+            parenCount++;
+        } else if (currentToken().type() == token::TokenType::CLOSE_PAREN) {
+            parenCount--;
+        }
+
+        if (parenCount < 0) {
+            break;
+        }
+
         if (!atEnd() && currentToken().type() == token::TokenType::IDENTIFIER && peek().type() == token::TokenType::OPEN_PAREN) {
             token::FunctionCallToken functionCall = parseFunctionCall();
             expressionTokens.push_back(std::make_shared<token::FunctionCallToken>(functionCall));
