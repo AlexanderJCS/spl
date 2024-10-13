@@ -76,6 +76,13 @@ namespace ast {
         std::shared_ptr<ASTNode> functionBody;
     };
 
+    class ControlFlowNode : public ASTNode {
+    public:
+        explicit ControlFlowNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children);
+
+        env::VariantType eval(env::Environment& env) const override;
+    };
+
     class StatementNode : public ASTNode {
     public:
         StatementNode() = default;

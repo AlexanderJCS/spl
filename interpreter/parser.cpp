@@ -76,6 +76,11 @@ std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
         std::shared_ptr<ast::ASTNode> functionDefNode = std::static_pointer_cast<ast::ASTNode>(functionDef);
 
         return functionDefNode;
+    } else if (currentToken().type() == token::TokenType::RETURN) {
+        std::shared_ptr<ast::ControlFlowNode> controlFlow = parseJump();
+        std::shared_ptr<ast::ASTNode> controlFlowNode = std::static_pointer_cast<ast::ASTNode>(controlFlow);
+
+        return controlFlowNode;
     } else {
         throw std::runtime_error("Could not determine how to parse a statement from the current token");
     }
@@ -213,4 +218,19 @@ std::shared_ptr<ast::FunctionDefNode> Parser::parseFuncDeclaration() {
         arguments,
         std::static_pointer_cast<ast::ASTNode>(std::make_shared<ast::RootNode>(functionParser.root()))
     });
+}
+
+std::shared_ptr<ast::ControlFlowNode> Parser::parseJump() {
+    token::Token jumpToken = advance();
+
+    switch (jumpToken.type()) {
+        case token::TokenType::RETURN: {
+            std::shared_ptr<ast::ExpressionNode> expression = parseExpression();
+            std::shared_ptr<ast::ASTNode> expressionNode = std::static_pointer_cast<ast::ASTNode>(expression);
+
+            return std::make_shared<ast::ControlFlowNode>(ast::ControlFlowNode{jumpToken, {expressionNode}});
+        }
+        default:
+            throw std::runtime_error("Unexpected control flow token");
+    }
 }

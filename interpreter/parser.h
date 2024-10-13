@@ -66,6 +66,12 @@ private:
     std::shared_ptr<ast::FunctionDefNode> parseFuncDeclaration();
 
     /**
+     * Parses a jump control flow statement (return, break, continue)
+     * @return The root of the control flow tree
+     */
+    std::shared_ptr<ast::ControlFlowNode> parseJump();
+
+    /**
      * Parses a function call. Assumes the current token is the function name/identifier.
      * @return The function call pseudo-token
      */

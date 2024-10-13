@@ -1,4 +1,5 @@
 #include "ast.h"
+#include "control_flow.h"
 
 #include <stdexcept>
 #include <utility>
@@ -142,7 +143,13 @@ env::VariantType ast::FunctionCallNode::eval(env::Environment& env) const {
         functionScope.set(functionBody.parameters()[i], nodeChildren[i]->eval(env));
     }
 
-    return functionBody.body()->eval(functionScope);
+    try {
+        functionBody.body()->eval(functionScope);
+    } catch (const control::ReturnException& e) {
+        return e.value();
+    }
+
+    return 0;  // todo: implement a null type
 }
 
 env::VariantType ast::FunctionDefNode::eval(env::Environment& env) const {
@@ -159,4 +166,17 @@ ast::FunctionDefNode::FunctionDefNode(const token::Token& identifier, std::vecto
     nodeToken = identifier;
     arguments = std::move(args);
     functionBody = std::move(body);
+}
+
+
+ast::ControlFlowNode::ControlFlowNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children)
+    : ASTNode(token, std::move(children)) {}
+
+env::VariantType ast::ControlFlowNode::eval(env::Environment& env) const {
+    switch (nodeToken.type()) {
+        case token::TokenType::RETURN:
+            throw control::ReturnException(nodeChildren[0]->eval(env));
+        default:
+            throw std::runtime_error("Unexpected control flow token");
+    }
 }
