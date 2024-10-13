@@ -126,36 +126,27 @@ ast::FunctionCallNode::FunctionCallNode(const token::FunctionCallToken& token) :
 env::VariantType ast::FunctionCallNode::eval(env::Environment& env) const {
     std::string functionName = nodeToken.value();
 
-    if (env.getType(functionName) != "ast") {
+    if (env.getType(functionName) != "function") {
         throw std::runtime_error("Function " + functionName + " is not a function");
     }
 
-    std::shared_ptr<ast::ASTNode> functionBody = std::get<std::shared_ptr<ast::ASTNode>>(env.get(functionName));
+    types::Function functionBody = std::get<types::Function>(env.get(functionName));
+
+    if (functionBody.parameters().size() != nodeChildren.size()) {
+        throw std::runtime_error("Function " + functionName + " expects " + std::to_string(functionBody.parameters().size()) + " arguments, but got " + std::to_string(nodeChildren.size()));
+    }
 
     env::Environment functionScope{env};
 
-    // set the arguments in the new environment
-    for (const std::shared_ptr<ASTNode>& child : nodeChildren) {
-        // cast to ExpressionNode. We can assume that the children of a FunctionCallNode are ExpressionNodes
-        //  because that's what's passed in the constructor
-        std::shared_ptr<ast::ExpressionNode> expressionNode = std::static_pointer_cast<ast::ExpressionNode>(child);
-
-        // just in case it's not an expression node
-        if (!expressionNode) {
-            throw std::runtime_error("Function call arguments must be expression nodes");
-        }
-
-        // eval() does not use the functionScope because it's in the outer scope, not the function scope
-        functionScope.set(expressionNode->token().value(), expressionNode->eval(env));
+    for (size_t i = 0; i < functionBody.parameters().size(); i++) {
+        functionScope.set(functionBody.parameters()[i], nodeChildren[i]->eval(env));
     }
 
-    functionBody->eval(functionScope);
-
-    return {};  // should return the return value of the function
+    return functionBody.body()->eval(functionScope);
 }
 
 env::VariantType ast::FunctionDefNode::eval(env::Environment& env) const {
-    env.set(nodeToken.value(), functionBody);
+    env.set(nodeToken.value(), types::Function{arguments, functionBody});
 
     return {};
 }

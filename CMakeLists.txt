@@ -18,8 +18,6 @@ add_executable(spl main.cpp
         interpreter/environment.h
         spl.cpp
         spl.h
-        interpreter/types.cpp
-        interpreter/types.h
         interpreter/control_flow.cpp
         interpreter/control_flow.h
 )

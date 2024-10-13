@@ -44,10 +44,21 @@ std::string env::Environment::getType(const std::string& name) const {
             return "float";
         } else if constexpr (std::is_same_v<T, std::string>) {
             return "string";
-        } else if constexpr (std::is_same<T, std::shared_ptr<ast::ASTNode>>::value) {
-            return "ast";
+        } else if constexpr (std::is_same<T, types::Function>::value) {
+            return "function";
         } else {
             throw std::runtime_error("Unknown type");
         }
     }, get(name));
+}
+
+types::Function::Function(std::vector<std::string> parameters, std::shared_ptr<ast::ASTNode> body)
+    : functionParameters(std::move(parameters)), functionBody(std::move(body)) {}
+
+const std::vector<std::string>& types::Function::parameters() const {
+    return functionParameters;
+}
+
+const std::shared_ptr<ast::ASTNode>& types::Function::body() const {
+    return functionBody;
 }

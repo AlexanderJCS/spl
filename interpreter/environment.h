@@ -3,6 +3,7 @@
 
 #include <variant>
 #include <string>
+#include <vector>
 #include <optional>
 #include <unordered_map>
 #include <memory>
@@ -12,14 +13,22 @@ namespace ast {
     class ASTNode;
 }
 
-namespace env {
-    using VariantType = std::variant<int, float, std::string, std::shared_ptr<ast::ASTNode>>;
+namespace types {
+    class Function {
+    public:
+        Function(std::vector<std::string> parameters, std::shared_ptr<ast::ASTNode> body);
+
+        [[nodiscard]] const std::vector<std::string>& parameters() const;
+        [[nodiscard]] const std::shared_ptr<ast::ASTNode>& body() const;
+
+    private:
+        std::vector<std::string> functionParameters;
+        std::shared_ptr<ast::ASTNode> functionBody;
+    };
 }
 
-#include "ast.h"
-
 namespace env {
-    using VariantType = std::variant<int, float, std::string, std::shared_ptr<ast::ASTNode>>;
+    using VariantType = std::variant<int, float, std::string, types::Function>;
 
     class Environment {
     public:

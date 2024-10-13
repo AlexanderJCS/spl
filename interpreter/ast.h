@@ -15,10 +15,6 @@ namespace ast {
     class ASTNode;
 }
 
-namespace env {
-    using VariantType = std::variant<int, float, std::string, std::shared_ptr<ast::ASTNode>>;
-}
-
 namespace token {
     class Token;
 }
