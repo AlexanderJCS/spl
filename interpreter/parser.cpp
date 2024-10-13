@@ -3,6 +3,7 @@
 #include "rpn.h"
 
 #include <stdexcept>
+#include <iostream>
 
 
 Parser::Parser(std::vector<token::Token> input) {
@@ -113,6 +114,7 @@ token::FunctionCallToken Parser::parseFunctionCall() {
 
     while (currentToken().type() != token::TokenType::CLOSE_PAREN) {
         arguments.push_back(parseExpression());
+        advance();  // skip the comma
     }
 
     expect(token::TokenType::CLOSE_PAREN);
