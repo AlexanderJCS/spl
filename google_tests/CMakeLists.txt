@@ -19,6 +19,8 @@ add_executable(Google_Tests_run
         ../interpreter/ast.h
         ../interpreter/environment.cpp
         ../interpreter/environment.h
+        ../interpreter/control_flow.cpp
+        ../interpreter/control_flow.h
         ../spl.cpp
         ../spl.h
 )
