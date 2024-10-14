@@ -5,11 +5,15 @@
 #include <iostream>
 
 int main() {
-    std::string input = "fun add(a, b) {\n"
+    std::string input = "fun sub(a, b) {\n"
+                        "    return a - b;\n"
+                        "}\n"
+                        "\n"
+                        "fun add(a, b) {\n"
                         "    return a + b;\n"
                         "}\n"
                         "\n"
-                        "b = add(3, 2);\n";
+                        "b = 5 / 2;\n";
     env::Environment env = run(input);
 
     std::cout << std::get<int>(env.get("b")) << std::endl;
