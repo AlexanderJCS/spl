@@ -20,12 +20,17 @@ namespace token {
         OPEN_BRACE,
         CLOSE_BRACE,
         LITERAL_INT,
+        LITERAL_BOOL,
         SEMICOLON,
         OPERATOR_DEFINE,
         OPERATOR_ADD,
         OPERATOR_SUB,
         OPERATOR_MUL,
         OPERATOR_DIV,
+        OPERATOR_BOOL_AND,
+        OPERATOR_BOOL_OR,
+        OPERATOR_UNARY_NOT,
+        OPERATOR_EQ,
         FUNCTION_DEF,
         FUNCTION_CALL,
         RETURN,
@@ -42,19 +47,27 @@ namespace token {
     };
 
     const std::unordered_map<TokenType, int> operatorPrecedenceMap = {
-            {TokenType::OPERATOR_DEFINE, 1},
-            {TokenType::OPERATOR_ADD, 2},
-            {TokenType::OPERATOR_SUB, 2},
-            {TokenType::OPERATOR_MUL, 3},
-            {TokenType::OPERATOR_DIV, 3}
+            {TokenType::OPERATOR_DEFINE,    1},
+            {TokenType::OPERATOR_BOOL_OR,   2},
+            {TokenType::OPERATOR_BOOL_AND,  3},
+            {TokenType::OPERATOR_EQ,        4},
+            {TokenType::OPERATOR_ADD,       5},
+            {TokenType::OPERATOR_SUB,       5},
+            {TokenType::OPERATOR_MUL,       6},
+            {TokenType::OPERATOR_DIV,       6},
+            {TokenType::OPERATOR_UNARY_NOT, 7}
     };
 
     const std::unordered_map<TokenType, Associativity> operatorAssociativityMap = {
-            {TokenType::OPERATOR_DEFINE, Associativity::RIGHT},
-            {TokenType::OPERATOR_ADD, Associativity::LEFT},
-            {TokenType::OPERATOR_SUB, Associativity::LEFT},
-            {TokenType::OPERATOR_MUL, Associativity::LEFT},
-            {TokenType::OPERATOR_DIV, Associativity::LEFT}
+            {TokenType::OPERATOR_DEFINE,    Associativity::RIGHT},
+            {TokenType::OPERATOR_ADD,       Associativity::LEFT},
+            {TokenType::OPERATOR_SUB,       Associativity::LEFT},
+            {TokenType::OPERATOR_MUL,       Associativity::LEFT},
+            {TokenType::OPERATOR_DIV,       Associativity::LEFT},
+            {TokenType::OPERATOR_BOOL_AND,  Associativity::LEFT},
+            {TokenType::OPERATOR_BOOL_OR,   Associativity::LEFT},
+            {TokenType::OPERATOR_UNARY_NOT, Associativity::RIGHT},
+            {TokenType::OPERATOR_EQ,        Associativity::LEFT}
     };
 
     class Token {

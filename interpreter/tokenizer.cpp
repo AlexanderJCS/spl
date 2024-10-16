@@ -88,18 +88,26 @@ std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
     size_t line = 1;
     size_t col = 1;
 
-    std::unordered_map<char, TokenType> singleCharTokens = {
-            {'(', TokenType::OPEN_PAREN},
-            {')', TokenType::CLOSE_PAREN},
-            {'{', TokenType::OPEN_BRACE},
-            {'}', TokenType::CLOSE_BRACE},
-            {'=', TokenType::OPERATOR_DEFINE},
-            {'+', TokenType::OPERATOR_ADD},
-            {'-', TokenType::OPERATOR_SUB},
-            {'*', TokenType::OPERATOR_MUL},
-            {'/', TokenType::OPERATOR_DIV},
-            {',', TokenType::SEPARATOR},
-            {';', TokenType::SEMICOLON},
+    // I am referring to 'simple tokens' as tokens that are always a string. For example, equals is always "=". A
+    //  complex token, like a LITERAL_INT, can be any characters so long as the follow the rules of an integer.
+    std::unordered_map<std::string, TokenType> simpleTokens = {
+            {"(", TokenType::OPEN_PAREN},
+            {")", TokenType::CLOSE_PAREN},
+            {"{", TokenType::OPEN_BRACE},
+            {"}", TokenType::CLOSE_BRACE},
+            {"=", TokenType::OPERATOR_DEFINE},
+            {"+", TokenType::OPERATOR_ADD},
+            {"-", TokenType::OPERATOR_SUB},
+            {"*", TokenType::OPERATOR_MUL},
+            {"/", TokenType::OPERATOR_DIV},
+            {",", TokenType::SEPARATOR},
+            {";", TokenType::SEMICOLON},
+            {"==", TokenType::OPERATOR_EQ},
+            {"&&", TokenType::OPERATOR_BOOL_AND},
+            {"||", TokenType::OPERATOR_BOOL_OR},
+            {"!", TokenType::OPERATOR_UNARY_NOT},
+            {"true", TokenType::LITERAL_BOOL},
+            {"false", TokenType::LITERAL_BOOL}
     };
 
     for (char ch : input) {
@@ -109,21 +117,23 @@ std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
             line++;
         }
 
-        // finalize the current token if the character is whitespace
-        if (std::isspace(ch)) {
+        bool isSpace = std::isspace(ch);
+        if (isSpace || simpleTokens.count(std::string(1, ch))) {
             processBuffer(buffer, tokens, line, col);
-            continue;
+
+            if (isSpace) {
+                continue;
+            }
         }
 
-        // handle single character tokens
-        if (singleCharTokens.count(ch)) {
-            processBuffer(buffer, tokens, line, col);  // Finalize any buffer before pushing the token
-            tokens.emplace_back(singleCharTokens[ch], std::string(1, ch), line, col);
-            continue;
-        }
-
-        // default case, add to buffer (for identifiers/literals/keywords)
         buffer += ch;
+
+        if (simpleTokens.count(buffer)) {
+            tokens.emplace_back(simpleTokens[buffer], buffer, line, col);
+            buffer = "";
+            continue;
+        }
+
         col++;
     }
 

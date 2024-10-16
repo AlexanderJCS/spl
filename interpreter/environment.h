@@ -28,7 +28,7 @@ namespace types {
 }
 
 namespace env {
-    using VariantType = std::variant<int, float, std::string, types::Function>;
+    using VariantType = std::variant<bool, int, float, std::string, types::Function>;
 
     class Environment {
     public:
