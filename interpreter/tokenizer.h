@@ -135,7 +135,7 @@ namespace token {
          * @param line The line number of the token.
          * @param column The column number of the token.
          */
-        static void processBuffer(std::string& buffer, std::vector<Token>& tokens, size_t line, size_t column);
+        static void processComplexToken(std::string& buffer, std::vector<Token>& tokens, size_t line, size_t column);
         static std::vector<Token> tokenize(const std::string& input);
     };
 }

@@ -60,7 +60,7 @@ token::Tokenizer::Tokenizer(const std::string& input) {
 }
 
 
-void token::Tokenizer::processBuffer(
+void token::Tokenizer::processComplexToken(
         std::string &buffer, std::vector<Token>& tokens, size_t line, size_t column
 ) {
     if (buffer.empty()) {
@@ -83,13 +83,7 @@ void token::Tokenizer::processBuffer(
 
 
 std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
-    std::vector<Token> tokens;
-    std::string buffer;
-    size_t line = 1;
-    size_t col = 1;
-
-    // I am referring to 'simple tokens' as tokens that are always a string. For example, equals is always "=". A
-    //  complex token, like a LITERAL_INT, can be any characters so long as the follow the rules of an integer.
+        // Map of simple tokens (single or multi-character operators)
     std::unordered_map<std::string, TokenType> simpleTokens = {
             {"(", TokenType::OPEN_PAREN},
             {")", TokenType::CLOSE_PAREN},
@@ -110,16 +104,31 @@ std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
             {"false", TokenType::LITERAL_BOOL}
     };
 
-    for (char ch : input) {
+    std::vector<Token> tokens;
+    std::string buffer;
+    size_t line = 1;
+    size_t col = 0;  // set to 0 because the loops increments immediately
+
+    for (int i = 0; i < input.size(); i++) {
+        char ch = input[i];
+        col++;
+
         // line breaks should increment the line number
         if (ch == '\n') {
-            col = 1;
+            col = 0;
             line++;
         }
 
+        /*
+         * I have no idea why the below code works, but it does. If anyone figures it out, please let me know so I can
+         * notify the Nobel Prize committee and recommend that you are awarded it immediately.
+         */
+
+        // 1st condition: if the character is a space
+        // 2nd condition: if the character is moving from a complex token/identifier to a simple token
         bool isSpace = std::isspace(ch);
-        if (isSpace || simpleTokens.count(std::string(1, ch))) {
-            processBuffer(buffer, tokens, line, col);
+        if (isSpace || (!buffer.empty() && !simpleTokens.count(buffer) && simpleTokens.count(std::string(1, ch)))) {
+            processComplexToken(buffer, tokens, line, col);
 
             if (isSpace) {
                 continue;
@@ -128,17 +137,18 @@ std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
 
         buffer += ch;
 
-        if (simpleTokens.count(buffer)) {
+        // handles the case where "=" is a token but "==" also is a token
+        bool nextBufferIsToken = i + 1 < input.size() && simpleTokens.count(buffer + input[i + 1]);
+
+        if (simpleTokens.count(buffer) && !nextBufferIsToken) {
             tokens.emplace_back(simpleTokens[buffer], buffer, line, col);
             buffer = "";
             continue;
         }
-
-        col++;
     }
 
     // finalize the last token
-    processBuffer(buffer, tokens, line, input.size());
+    processComplexToken(buffer, tokens, line, input.size());
 
     return tokens;
 }

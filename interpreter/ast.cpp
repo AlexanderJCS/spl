@@ -61,58 +61,59 @@ ast::StatementNode::StatementNode(const token::Token& token, std::vector<std::sh
 
 env::VariantType ast::ExpressionNode::eval(env::Environment& env) const {
     if (nodeChildren.empty()) {
-        if (nodeToken.type() == token::TokenType::IDENTIFIER) {
-            return env.get(nodeToken.value());
-        } else if (nodeToken.type() == token::TokenType::LITERAL_INT) {
-            return std::stoi(nodeToken.value());
-        } else if (nodeToken.type() == token::TokenType::FUNCTION_CALL) {
-            // not sure how you got here... but just in case
-            throw std::runtime_error("Function calls should be handled by FunctionCallNode");
-        } else {
-            throw std::runtime_error("Unexpected token when evaluating expression");
-        }
-    } else {
-        env::VariantType left = nodeChildren[0]->eval(env);
-        env::VariantType right = nodeChildren[1]->eval(env);
-
-        if (nodeToken.type() == token::TokenType::OPERATOR_ADD) {
-            if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
-                return std::get<int>(left) + std::get<int>(right);
-            } else if (std::holds_alternative<float>(left) && std::holds_alternative<float>(right)) {
-                return std::get<float>(left) + std::get<float>(right);
-            } else {
-                throw std::runtime_error("Invalid types for addition");
-            }
-        } else if (nodeToken.type() == token::TokenType::OPERATOR_SUB) {
-            if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
-                return std::get<int>(left) - std::get<int>(right);
-            } else if (std::holds_alternative<float>(left) && std::holds_alternative<float>(right)) {
-                return std::get<float>(left) - std::get<float>(right);
-            } else {
-                throw std::runtime_error("Invalid types for subtraction");
-            }
-        } else if (nodeToken.type() == token::TokenType::OPERATOR_MUL) {
-            if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
-                return std::get<int>(left) * std::get<int>(right);
-            } else if (std::holds_alternative<float>(left) && std::holds_alternative<float>(right)) {
-                return std::get<float>(left) * std::get<float>(right);
-            } else {
-                throw std::runtime_error("Invalid types for multiplication");
-            }
-        } else if (nodeToken.type() == token::TokenType::OPERATOR_DIV) {
-            if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
-                return std::get<int>(left) / std::get<int>(right);
-            } else if (std::holds_alternative<float>(left) && std::holds_alternative<float>(right)) {
-                return std::get<float>(left) / std::get<float>(right);
-            } else {
-                throw std::runtime_error("Invalid types for division");
-            }
-        } else {
-            throw std::runtime_error("Unexpected token when evaluating expression");
+        switch (nodeToken.type()) {
+            case token::TokenType::IDENTIFIER:
+                return env.get(nodeToken.value());
+            case token::TokenType::LITERAL_INT:
+                return std::stoi(nodeToken.value());
+            case token::TokenType::LITERAL_BOOL:
+                return nodeToken.value() == "true" ? true : false;
+            default:
+                throw std::runtime_error("Unexpected token when evaluating expression");
         }
     }
 
-    return {};
+    if (nodeChildren.size() == 1) {
+        if (nodeToken.type() == token::TokenType::OPERATOR_UNARY_NOT) {
+            return !std::get<bool>(nodeChildren[0]->eval(env));
+        } else {
+            throw std::runtime_error("Unexpected unary operator");
+        }
+    }
+
+    env::VariantType left = nodeChildren[0]->eval(env);
+    env::VariantType right = nodeChildren[1]->eval(env);
+
+    auto applyOperation = [](env::VariantType left, env::VariantType right, auto op) {
+        if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
+            return env::VariantType(op(std::get<int>(left), std::get<int>(right)));
+        } else if (std::holds_alternative<float>(left) && std::holds_alternative<float>(right)) {
+            return env::VariantType(op(std::get<float>(left), std::get<float>(right)));
+        } else if (std::holds_alternative<bool>(left) && std::holds_alternative<bool>(right)) {
+            return env::VariantType(op(std::get<bool>(left), std::get<bool>(right)));
+        } else {
+            throw std::runtime_error("Invalid types for operation");
+        }
+    };
+
+    switch (nodeToken.type()) {
+        case token::TokenType::OPERATOR_ADD:
+            return applyOperation(left, right, std::plus<>{});
+        case token::TokenType::OPERATOR_SUB:
+            return applyOperation(left, right, std::minus<>{});
+        case token::TokenType::OPERATOR_MUL:
+            return applyOperation(left, right, std::multiplies<>{});
+        case token::TokenType::OPERATOR_DIV:
+            return applyOperation(left, right, std::divides<>{});
+        case token::TokenType::OPERATOR_EQ:
+            return applyOperation(left, right, std::equal_to<>{});
+        case token::TokenType::OPERATOR_BOOL_AND:
+            return applyOperation(left, right, std::logical_and<>{});
+        case token::TokenType::OPERATOR_BOOL_OR:
+            return applyOperation(left, right, std::logical_or<>{});
+        default:
+            throw std::runtime_error("Unexpected token when evaluating expression operator");
+    }
 }
 
 ast::ExpressionNode::ExpressionNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children)
