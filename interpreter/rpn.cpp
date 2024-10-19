@@ -67,6 +67,10 @@ std::shared_ptr<ast::ExpressionNode> ShuntingYardParser::parse() const {
             case token::TokenType::OPERATOR_MUL:
             case token::TokenType::OPERATOR_DIV:
             case token::TokenType::OPERATOR_DEFINE:
+            case token::TokenType::OPERATOR_EQ:
+            case token::TokenType::OPERATOR_BOOL_AND:
+            case token::TokenType::OPERATOR_BOOL_OR:
+            case token::TokenType::OPERATOR_UNARY_NOT:
                 while (!operatorStack.empty() &&  // stack is not empty
                        (operatorStack.top().precedence() > token.precedence() ||  // higher precedence
                        (operatorStack.top().precedence() == token.precedence() && token.associativity() == token::Associativity::LEFT))  // equal precedence if left associative
@@ -124,6 +128,13 @@ void ShuntingYardParser::addNode(std::stack<std::shared_ptr<ast::ExpressionNode>
         const auto& functionCallToken = *functionCallTokenPtr;
 
         operandStack.push(std::make_shared<ast::FunctionCallNode>(ast::FunctionCallNode{functionCallToken}));
+    } else if (token.type() == token::TokenType::OPERATOR_UNARY_NOT) {
+        std::shared_ptr<ast::ExpressionNode> operand = operandStack.top();
+        operandStack.pop();
+
+        std::shared_ptr<ast::ASTNode> operandPtr = std::static_pointer_cast<ast::ASTNode>(operand);
+
+        operandStack.push(std::make_shared<ast::ExpressionNode>(ast::ExpressionNode{token, {operandPtr}}));
     } else {
         std::shared_ptr<ast::ExpressionNode> right = operandStack.top();
         operandStack.pop();

@@ -5,10 +5,10 @@
 #include <iostream>
 
 int main() {
-    std::string input = "b = 3 == 3;\n";
+    std::string input = "b = (!(3 == 4) && true) || false;\n";
     env::Environment env = run(input);
 
-    std::cout << std::get<int>(env.get("b")) << std::endl;
+    std::cout << std::get<bool>(env.get("b")) << std::endl;
 
     return 0;
 }
