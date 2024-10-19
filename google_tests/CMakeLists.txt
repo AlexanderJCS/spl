@@ -8,7 +8,6 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 # 'Google_Tests_run' is the target name
 # Include all test source files and relevant project files in a single add_executable call
 add_executable(Google_Tests_run
-        test_tokenizer.cpp
         ../interpreter/tokenizer.cpp
         ../interpreter/tokenizer.h
         ../interpreter/rpn.cpp
@@ -23,7 +22,15 @@ add_executable(Google_Tests_run
         ../interpreter/control_flow.h
         ../spl.cpp
         ../spl.h
+        test_operators.cpp
+        test_tokenizer.cpp
 )
 
 # Link with Google Test libraries
 target_link_libraries(Google_Tests_run gtest gtest_main)
+
+# Enable CTest to integrate with CMake's testing functionality
+enable_testing()
+
+# Register the test with CTest
+add_test(NAME GoogleTestRun COMMAND Google_Tests_run)

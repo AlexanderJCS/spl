@@ -21,6 +21,8 @@ namespace types {
         [[nodiscard]] const std::vector<std::string>& parameters() const;
         [[nodiscard]] const std::shared_ptr<ast::ASTNode>& body() const;
 
+        bool operator==(const Function& other) const;
+
     private:
         std::vector<std::string> functionParameters;
         std::shared_ptr<ast::ASTNode> functionBody;

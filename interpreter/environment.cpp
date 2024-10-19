@@ -62,3 +62,7 @@ const std::vector<std::string>& types::Function::parameters() const {
 const std::shared_ptr<ast::ASTNode>& types::Function::body() const {
     return functionBody;
 }
+
+bool types::Function::operator==(const types::Function &other) const {
+    return functionParameters == other.functionParameters && functionBody == other.functionBody;
+}
