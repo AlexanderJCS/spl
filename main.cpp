@@ -5,10 +5,15 @@
 #include <iostream>
 
 int main() {
-    std::string input = "b = (!(3 == 4) && true) || false;\n";
+    std::string input = "fun myFunction(arg1, arg2) {\n"
+                        "    return (arg1 + arg2) * 5;\n"
+                        "}\n"
+                        "\n"
+                        "result = myFunction(2.5, 3);\n"
+                        "equality = result == 27.5;";
     env::Environment env = run(input);
 
-    std::cout << std::get<bool>(env.get("b")) << std::endl;
+    std::cout << std::get<bool>(env.get("equality")) << std::endl;
 
     return 0;
 }

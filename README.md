@@ -4,7 +4,7 @@ SPL (simple programming language) is a homemade dynamically-typed programming la
 
 ## Features
 
-This language currently supports variables, functions, integer expressions, and boolean expressions.
+This language currently supports variables, functions, integer expressions, floating-point expressions, and boolean expressions.
 
 ## Syntax
 Notes:
@@ -20,9 +20,11 @@ fun myFunction(arg1, arg2) {
     return (arg1 + arg2) * 5;
 }
 
-result = myFunction(2, 3);
-equality = result == 25;
+result = myFunction(2.5, 3);
+equality = result == 27.5;
 ```
+
+`equality` will be `true` in this case.
 
 ## Contributing
 
