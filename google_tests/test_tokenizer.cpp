@@ -31,7 +31,7 @@ TEST(TokenizerTest, AlwaysTrue) {
      * SEPARATOR
      */
 
-    std::string input = "x ( { } ) 42 ; = \n \n \t funcCall(a, b) + - * / fun return , && || ! == true false";
+    std::string input = "x ( { } ) 42 4.7 10e3 5. ; = \n \n \t funcCall(a, b) + - * / fun return , && || ! == true false";
     token::Tokenizer tokenizer(input);
     std::vector<token::Token> tokens = tokenizer.getTokens();
 
@@ -43,6 +43,9 @@ TEST(TokenizerTest, AlwaysTrue) {
             {token::TokenType::CLOSE_BRACE, ""},
             {token::TokenType::CLOSE_PAREN, ""},
             {token::TokenType::LITERAL_INT, "42"},
+            {token::TokenType::LITERAL_FLOAT, "4.7"},
+            {token::TokenType::LITERAL_FLOAT, "10e3"},
+            {token::TokenType::LITERAL_FLOAT, "5."},
             {token::TokenType::SEMICOLON, ""},
             {token::TokenType::OPERATOR_DEFINE, ""},
             {token::TokenType::IDENTIFIER, "funcCall"},

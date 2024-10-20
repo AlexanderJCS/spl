@@ -1,5 +1,6 @@
 #include "tokenizer.h"
 
+#include <stdexcept>
 #include <utility>
 #include <string>
 #include <cctype>
@@ -61,7 +62,7 @@ token::Tokenizer::Tokenizer(const std::string& input) {
 
 
 void token::Tokenizer::processComplexToken(
-        std::string &buffer, std::vector<Token>& tokens, size_t line, size_t column
+        std::string& buffer, std::vector<Token>& tokens, size_t line, size_t column
 ) {
     if (buffer.empty()) {
         return;
@@ -74,7 +75,19 @@ void token::Tokenizer::processComplexToken(
     } else if (std::isalpha(buffer[0])) {
         tokens.emplace_back(TokenType::IDENTIFIER, buffer, line, column);
     } else {
-        tokens.emplace_back(TokenType::LITERAL_INT, buffer, line, column);
+        bool isInteger = true;
+        for (char ch : buffer) {
+            if (ch == '.' || ch == 'e' || ch == 'E') {
+                isInteger = false;
+                break;
+            } else if (!std::isdigit(ch)) {
+                // not a number
+                throw std::runtime_error("Unexpected character in number: " + buffer);
+            }
+        }
+
+
+        tokens.emplace_back(isInteger ? TokenType::LITERAL_INT : TokenType::LITERAL_FLOAT, buffer, line, column);
     }
 
     buffer.clear();

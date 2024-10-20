@@ -21,6 +21,7 @@ namespace token {
         CLOSE_BRACE,
         LITERAL_INT,
         LITERAL_BOOL,
+        LITERAL_FLOAT,
         SEMICOLON,
         OPERATOR_DEFINE,
         OPERATOR_ADD,
