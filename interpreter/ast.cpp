@@ -66,6 +66,8 @@ env::VariantType ast::ExpressionNode::eval(env::Environment& env) const {
                 return env.get(nodeToken.value());
             case token::TokenType::LITERAL_INT:
                 return std::stoi(nodeToken.value());
+            case token::TokenType::LITERAL_FLOAT:
+                return std::stof(nodeToken.value());
             case token::TokenType::LITERAL_BOOL:
                 return nodeToken.value() == "true" ? true : false;
             default:
@@ -85,11 +87,22 @@ env::VariantType ast::ExpressionNode::eval(env::Environment& env) const {
     env::VariantType right = nodeChildren[1]->eval(env);
 
     auto applyOperation = [](env::VariantType left, env::VariantType right, auto op) {
-        if (std::holds_alternative<int>(left) && std::holds_alternative<int>(right)) {
+        bool leftInt = std::holds_alternative<int>(left);
+        bool rightInt = std::holds_alternative<int>(right);
+        bool leftFloat = std::holds_alternative<float>(left);
+        bool rightFloat = std::holds_alternative<float>(right);
+        bool leftBool = std::holds_alternative<bool>(left);
+        bool rightBool = std::holds_alternative<bool>(right);
+
+        if (leftInt && rightInt) {
             return env::VariantType(op(std::get<int>(left), std::get<int>(right)));
-        } else if (std::holds_alternative<float>(left) && std::holds_alternative<float>(right)) {
+        } else if (leftFloat && rightFloat) {
             return env::VariantType(op(std::get<float>(left), std::get<float>(right)));
-        } else if (std::holds_alternative<bool>(left) && std::holds_alternative<bool>(right)) {
+        } else if (leftFloat && rightInt) {
+            return env::VariantType(op(std::get<float>(left), static_cast<float>(std::get<int>(right))));
+        } else if (leftInt && rightFloat) {
+            return env::VariantType(op(static_cast<float>(std::get<int>(left)), std::get<float>(right)));
+        } else if (leftBool && rightBool) {
             return env::VariantType(op(std::get<bool>(left), std::get<bool>(right)));
         } else {
             throw std::runtime_error("Invalid types for operation");
