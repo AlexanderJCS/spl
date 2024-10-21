@@ -24,6 +24,7 @@ add_executable(Google_Tests_run
         ../spl.h
         test_operators.cpp
         test_tokenizer.cpp
+        test_scope.cpp
 )
 
 # Link with Google Test libraries
