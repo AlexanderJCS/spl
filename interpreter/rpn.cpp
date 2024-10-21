@@ -6,7 +6,6 @@
 #include <utility>
 #include <stack>
 #include <stdexcept>
-#include <iostream>
 
 
 ShuntingYardParser::ShuntingYardParser(std::vector<std::shared_ptr<token::Token>> input)
