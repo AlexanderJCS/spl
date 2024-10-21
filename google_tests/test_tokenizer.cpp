@@ -5,33 +5,7 @@
 #include "../interpreter/tokenizer.h"
 
 TEST(TokenizerTest, AlwaysTrue) {
-    /*
-     * All token types as of writing this test:
-     * INVALID,
-     * IDENTIFIER,
-     * OPEN_PAREN,
-     * CLOSE_PAREN,
-     * OPEN_BRACE,
-     * CLOSE_BRACE,
-     * LITERAL_INT,
-     * LITERAL_BOOL,
-     * SEMICOLON,
-     * OPERATOR_DEFINE,
-     * OPERATOR_ADD,
-     * OPERATOR_SUB,
-     * OPERATOR_MUL,
-     * OPERATOR_DIV,
-     * OPERATOR_BOOL_AND,
-     * OPERATOR_BOOL_OR,
-     * OPERATOR_UNARY_NOT,
-     * OPERATOR_EQ,
-     * FUNCTION_DEF,
-     * FUNCTION_CALL,
-     * RETURN,
-     * SEPARATOR
-     */
-
-    std::string input = "x ( { } ) 42 4.7 10e3 5. ; = \n \n \t funcCall(a, b) + - * / fun return , && || ! == true false if";
+    std::string input = "x ( { } ) 42 4.7 10e3 5. ; = \n \n \t funcCall(a, b) + - * / fun return , && || ! == true false if elif else";
     token::Tokenizer tokenizer(input);
     std::vector<token::Token> tokens = tokenizer.getTokens();
 
@@ -67,7 +41,9 @@ TEST(TokenizerTest, AlwaysTrue) {
             {token::TokenType::OPERATOR_EQ, ""},
             {token::TokenType::LITERAL_BOOL, "true"},
             {token::TokenType::LITERAL_BOOL, "false"},
-            {token::TokenType::IF_STATEMENT, ""}
+            {token::TokenType::IF_STATEMENT, ""},
+            {token::TokenType::ELIF_STATEMENT, ""},
+            {token::TokenType::ELSE_STATEMENT, ""}
     };
 
     ASSERT_EQ(tokens.size(), expectedTokens.size());

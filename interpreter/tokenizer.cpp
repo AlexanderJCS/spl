@@ -115,7 +115,9 @@ std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
             {"!", TokenType::OPERATOR_UNARY_NOT},
             {"true", TokenType::LITERAL_BOOL},
             {"false", TokenType::LITERAL_BOOL},
-            {"if", TokenType::IF_STATEMENT}
+            {"if", TokenType::IF_STATEMENT},
+            {"elif", TokenType::ELIF_STATEMENT},
+            {"else", TokenType::ELSE_STATEMENT}
     };
 
     std::vector<Token> tokens;

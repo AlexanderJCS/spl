@@ -3,6 +3,7 @@
 #include "rpn.h"
 
 #include <stdexcept>
+#include <iostream>
 
 
 Parser::Parser(std::vector<token::Token> input) {
@@ -226,17 +227,43 @@ std::shared_ptr<ast::ControlFlowNode> Parser::parseJump() {
 std::shared_ptr<ast::IfNode> Parser::parseIf() {
     token::Token ifToken = advance();  // skip the "if" keyword
 
-    std::vector<std::shared_ptr<token::Token>> conditionTokens = extractEnclosedTokensPtr(token::TokenType::OPEN_PAREN, token::TokenType::CLOSE_PAREN);
+    std::vector<std::shared_ptr<ast::ASTNode>> children;
 
-    std::vector<token::Token> ifTokens = extractEnclosedTokens(token::TokenType::OPEN_BRACE, token::TokenType::CLOSE_BRACE);
+    // parse the 'if' condition and body
+    std::vector<std::shared_ptr<token::Token>> ifConditionTokens = extractEnclosedTokensPtr(token::TokenType::OPEN_PAREN, token::TokenType::CLOSE_PAREN);
+    std::vector<token::Token> ifBodyTokens = extractEnclosedTokens(token::TokenType::OPEN_BRACE, token::TokenType::CLOSE_BRACE);
 
-    ShuntingYardParser conditionParser{conditionTokens};
-    std::shared_ptr<ast::ExpressionNode> conditionRoot = conditionParser.root();
+    ShuntingYardParser ifConditionParser{ifConditionTokens};
+    Parser ifBodyParser{ifBodyTokens};
 
-    Parser ifParser{ifTokens};
-    std::shared_ptr<ast::RootNode> ifRoot = std::make_shared<ast::RootNode>(ifParser.root());
+    children.push_back(ifConditionParser.root());
+    children.push_back(std::make_shared<ast::RootNode>(ifBodyParser.root()));
 
-    return std::make_shared<ast::IfNode>(ast::IfNode{ifToken, {conditionRoot, ifRoot}});
+    // parse elif statements
+    while (!atEnd() && currentToken().type() == token::TokenType::ELIF_STATEMENT) {
+        advance();  // skip the "elif" keyword
+
+        std::vector<std::shared_ptr<token::Token>> elifConditionTokens = extractEnclosedTokensPtr(token::TokenType::OPEN_PAREN, token::TokenType::CLOSE_PAREN);
+        std::vector<token::Token> elifBodyTokens = extractEnclosedTokens(token::TokenType::OPEN_BRACE, token::TokenType::CLOSE_BRACE);
+
+        ShuntingYardParser elifConditionParser{elifConditionTokens};
+        Parser elifBodyParser{elifBodyTokens};
+
+        children.push_back(elifConditionParser.root());
+        children.push_back(std::make_shared<ast::RootNode>(elifBodyParser.root()));
+    }
+
+    // parse else statement
+    if (!atEnd() && currentToken().type() == token::TokenType::ELSE_STATEMENT) {
+        advance();  // skip the "else" keyword
+
+        std::vector<token::Token> elseBodyTokens = extractEnclosedTokens(token::TokenType::OPEN_BRACE, token::TokenType::CLOSE_BRACE);
+        Parser elseBodyParser{elseBodyTokens};
+
+        children.push_back(std::make_shared<ast::RootNode>(elseBodyParser.root()));
+    }
+
+    return std::make_shared<ast::IfNode>(ast::IfNode{ifToken, children});
 }
 
 std::vector<std::shared_ptr<token::Token>> Parser::extractEnclosedTokensPtr(token::TokenType start, token::TokenType end) {

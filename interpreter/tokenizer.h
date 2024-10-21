@@ -37,7 +37,9 @@ namespace token {
         FUNCTION_CALL,
         RETURN,
         SEPARATOR,
-        IF_STATEMENT
+        IF_STATEMENT,
+        ELIF_STATEMENT,
+        ELSE_STATEMENT
     };
 
     /**

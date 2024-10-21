@@ -52,18 +52,19 @@ ast::DeclarationNode::DeclarationNode(std::vector<std::shared_ptr<ASTNode>> chil
     : ASTNode(token::Token(), std::move(children)) {}
 
 env::VariantType ast::IfNode::eval(env::Environment& env) const {
-    if (nodeChildren.size() != 2 && nodeChildren.size() != 3) {
-        throw std::runtime_error("If statement must have 2 or 3 children");
+    bool foundTrueCondition = false;
+
+    for (int i = 0; i < nodeChildren.size(); i += 2) {
+        if (std::get<bool>(nodeChildren[i]->eval(env))) {
+            nodeChildren[i + 1]->eval(env);
+            foundTrueCondition = true;
+            break;
+        }
     }
 
-
-    env::VariantType condition = nodeChildren[0]->eval(env);
-    env::Environment newScope = env::Environment{env};
-
-    if (std::get<bool>(condition)) {
-        nodeChildren[1]->eval(newScope);
-    } else if (nodeChildren.size() == 3) {
-        nodeChildren[2]->eval(newScope);
+    // if no condition is true and there is an else block
+    if (!foundTrueCondition && nodeChildren.size() % 2 == 1) {
+        nodeChildren[nodeChildren.size() - 1]->eval(env);
     }
 
     return {};
