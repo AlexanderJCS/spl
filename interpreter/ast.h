@@ -83,10 +83,10 @@ namespace ast {
         env::VariantType eval(env::Environment& env) const override;
     };
 
-    class StatementNode : public ASTNode {
+    class IfNode : public ASTNode {
     public:
-        StatementNode() = default;
-        explicit StatementNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children);
+        IfNode() = default;
+        explicit IfNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children);
 
         env::VariantType eval(env::Environment& env) const override;
     };

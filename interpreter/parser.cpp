@@ -81,6 +81,11 @@ std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
         std::shared_ptr<ast::ASTNode> controlFlowNode = std::static_pointer_cast<ast::ASTNode>(controlFlow);
 
         return controlFlowNode;
+    } else if (currentToken().type() == token::TokenType::IF_STATEMENT) {
+        std::shared_ptr<ast::IfNode> ifStatement = parseIf();
+        std::shared_ptr<ast::ASTNode> ifStatementNode = std::static_pointer_cast<ast::ASTNode>(ifStatement);
+
+        return ifStatementNode;
     } else {
         throw std::runtime_error("Could not determine how to parse a statement from the current token");
     }
@@ -233,4 +238,45 @@ std::shared_ptr<ast::ControlFlowNode> Parser::parseJump() {
         default:
             throw std::runtime_error("Unexpected control flow token");
     }
+}
+
+std::shared_ptr<ast::IfNode> Parser::parseIf() {
+    token::Token ifToken = advance();  // skip the "if" keyword
+
+    std::vector<std::shared_ptr<token::Token>> conditionTokens = {std::make_shared<token::Token>(currentToken())};
+    expect(token::TokenType::OPEN_PAREN);  // conditionTokens[0] should be the open parenthesis
+    int parenthesis = 1;
+    while (parenthesis > 0) {
+        token::Token token = advance();
+        if (token.type() == token::TokenType::OPEN_PAREN) {
+            parenthesis++;
+        } else if (token.type() == token::TokenType::CLOSE_PAREN) {
+            parenthesis--;
+        }
+        conditionTokens.push_back(std::make_shared<token::Token>(token));
+    }
+
+    expect(token::TokenType::OPEN_BRACE);  // ifTokens[0] should be the open brace
+    std::vector<token::Token> ifTokens;
+    int brace = 1;
+
+    while (brace > 0) {
+        token::Token token = advance();
+        if (token.type() == token::TokenType::OPEN_BRACE) {
+            brace++;
+        } else if (token.type() == token::TokenType::CLOSE_BRACE) {
+            brace--;
+        }
+        if (brace > 0) {
+            ifTokens.push_back(token);
+        }
+    }
+
+    ShuntingYardParser conditionParser{conditionTokens};
+    std::shared_ptr<ast::ExpressionNode> conditionRoot = conditionParser.root();
+
+    Parser ifParser{ifTokens};
+    std::shared_ptr<ast::RootNode> ifRoot = std::make_shared<ast::RootNode>(ifParser.root());
+
+    return std::make_shared<ast::IfNode>(ast::IfNode{ifToken, {conditionRoot, ifRoot}});
 }

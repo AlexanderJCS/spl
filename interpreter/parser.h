@@ -72,6 +72,12 @@ private:
     std::shared_ptr<ast::ControlFlowNode> parseJump();
 
     /**
+     * Parses an if statement.
+     * @return The root of the if statement tree
+     */
+    std::shared_ptr<ast::IfNode> parseIf();
+
+    /**
      * Parses a function call. Assumes the current token is the function name/identifier.
      * @return The function call pseudo-token
      */

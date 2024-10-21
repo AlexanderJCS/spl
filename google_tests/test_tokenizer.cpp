@@ -31,7 +31,7 @@ TEST(TokenizerTest, AlwaysTrue) {
      * SEPARATOR
      */
 
-    std::string input = "x ( { } ) 42 4.7 10e3 5. ; = \n \n \t funcCall(a, b) + - * / fun return , && || ! == true false";
+    std::string input = "x ( { } ) 42 4.7 10e3 5. ; = \n \n \t funcCall(a, b) + - * / fun return , && || ! == true false if";
     token::Tokenizer tokenizer(input);
     std::vector<token::Token> tokens = tokenizer.getTokens();
 
@@ -66,7 +66,8 @@ TEST(TokenizerTest, AlwaysTrue) {
             {token::TokenType::OPERATOR_UNARY_NOT, ""},
             {token::TokenType::OPERATOR_EQ, ""},
             {token::TokenType::LITERAL_BOOL, "true"},
-            {token::TokenType::LITERAL_BOOL, "false"}
+            {token::TokenType::LITERAL_BOOL, "false"},
+            {token::TokenType::IF_STATEMENT, ""}
     };
 
     ASSERT_EQ(tokens.size(), expectedTokens.size());

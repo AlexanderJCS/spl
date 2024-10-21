@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <memory>
 
 namespace ast {
@@ -35,7 +36,8 @@ namespace token {
         FUNCTION_DEF,
         FUNCTION_CALL,
         RETURN,
-        SEPARATOR
+        SEPARATOR,
+        IF_STATEMENT
     };
 
     /**
@@ -118,6 +120,7 @@ namespace token {
     private:
         std::vector<std::shared_ptr<ast::ExpressionNode>> functionArguments;
     };
+
     class Tokenizer {
     public:
         explicit Tokenizer(const std::string& input);

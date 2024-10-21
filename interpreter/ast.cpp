@@ -52,11 +52,23 @@ env::VariantType ast::DeclarationNode::eval(env::Environment &env) const {
 ast::DeclarationNode::DeclarationNode(std::vector<std::shared_ptr<ASTNode>> children)
     : ASTNode(token::Token(), std::move(children)) {}
 
-env::VariantType ast::StatementNode::eval(env::Environment& env) const {
-    return -1;  // not implemented
+env::VariantType ast::IfNode::eval(env::Environment& env) const {
+    if (nodeChildren.size() != 2 && nodeChildren.size() != 3) {
+        throw std::runtime_error("If statement must have 2 or 3 children");
+    }
+
+    env::VariantType condition = nodeChildren[0]->eval(env);
+
+    if (std::get<bool>(condition)) {
+        nodeChildren[1]->eval(env);
+    } else if (nodeChildren.size() == 3) {
+        nodeChildren[2]->eval(env);
+    }
+
+    return {};
 }
 
-ast::StatementNode::StatementNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children)
+ast::IfNode::IfNode(const token::Token& token, std::vector<std::shared_ptr<ASTNode>> children)
     : ASTNode(token, std::move(children)) {}
 
 env::VariantType ast::ExpressionNode::eval(env::Environment& env) const {
