@@ -3,7 +3,6 @@
 #include "rpn.h"
 
 #include <stdexcept>
-#include <iostream>
 
 
 Parser::Parser(std::vector<token::Token> input) {
@@ -199,22 +198,7 @@ std::shared_ptr<ast::FunctionDefNode> Parser::parseFuncDeclaration() {
     expect(token::TokenType::OPEN_BRACE);
 
     // get all tokens within the curly braces and create a parser for them
-    std::vector<token::Token> functionTokens;
-    int braceCount = 1;
-
-    while (braceCount > 0) {
-        token::Token token = advance();
-
-        if (token.type() == token::TokenType::OPEN_BRACE) {
-            braceCount++;
-        } else if (token.type() == token::TokenType::CLOSE_BRACE) {
-            braceCount--;
-        }
-
-        if (braceCount > 0) {
-            functionTokens.push_back(token);
-        }
-    }
+    std::vector<token::Token> functionTokens = extractEnclosedTokens(token::TokenType::OPEN_BRACE, token::TokenType::CLOSE_BRACE);
 
     Parser functionParser{functionTokens};
 
@@ -243,34 +227,9 @@ std::shared_ptr<ast::ControlFlowNode> Parser::parseJump() {
 std::shared_ptr<ast::IfNode> Parser::parseIf() {
     token::Token ifToken = advance();  // skip the "if" keyword
 
-    std::vector<std::shared_ptr<token::Token>> conditionTokens = {std::make_shared<token::Token>(currentToken())};
-    expect(token::TokenType::OPEN_PAREN);  // conditionTokens[0] should be the open parenthesis
-    int parenthesis = 1;
-    while (parenthesis > 0) {
-        token::Token token = advance();
-        if (token.type() == token::TokenType::OPEN_PAREN) {
-            parenthesis++;
-        } else if (token.type() == token::TokenType::CLOSE_PAREN) {
-            parenthesis--;
-        }
-        conditionTokens.push_back(std::make_shared<token::Token>(token));
-    }
+    std::vector<std::shared_ptr<token::Token>> conditionTokens = extractEnclosedTokensPtr(token::TokenType::OPEN_PAREN, token::TokenType::CLOSE_PAREN);
 
-    expect(token::TokenType::OPEN_BRACE);  // ifTokens[0] should be the open brace
-    std::vector<token::Token> ifTokens;
-    int brace = 1;
-
-    while (brace > 0) {
-        token::Token token = advance();
-        if (token.type() == token::TokenType::OPEN_BRACE) {
-            brace++;
-        } else if (token.type() == token::TokenType::CLOSE_BRACE) {
-            brace--;
-        }
-        if (brace > 0) {
-            ifTokens.push_back(token);
-        }
-    }
+    std::vector<token::Token> ifTokens = extractEnclosedTokens(token::TokenType::OPEN_BRACE, token::TokenType::CLOSE_BRACE);
 
     ShuntingYardParser conditionParser{conditionTokens};
     std::shared_ptr<ast::ExpressionNode> conditionRoot = conditionParser.root();
@@ -279,4 +238,38 @@ std::shared_ptr<ast::IfNode> Parser::parseIf() {
     std::shared_ptr<ast::RootNode> ifRoot = std::make_shared<ast::RootNode>(ifParser.root());
 
     return std::make_shared<ast::IfNode>(ast::IfNode{ifToken, {conditionRoot, ifRoot}});
+}
+
+std::vector<std::shared_ptr<token::Token>> Parser::extractEnclosedTokensPtr(token::TokenType start, token::TokenType end) {
+    expect(start);
+
+    std::vector<std::shared_ptr<token::Token>> enclosedTokens;
+    int count = 1;
+
+    while (count > 0) {
+        token::Token token = advance();
+
+        if (token.type() == start) {
+            count++;
+        } else if (token.type() == end) {
+            count--;
+        }
+
+        if (count > 0) {
+            enclosedTokens.push_back(std::make_shared<token::Token>(token));
+        }
+    }
+
+    return enclosedTokens;
+}
+
+std::vector<token::Token> Parser::extractEnclosedTokens(token::TokenType start, token::TokenType end) {
+    std::vector<std::shared_ptr<token::Token>> enclosedTokensPtr = extractEnclosedTokensPtr(start, end);
+
+    std::vector<token::Token> enclosedTokens;
+    for (const std::shared_ptr<token::Token>& tokenPtr : enclosedTokensPtr) {
+        enclosedTokens.push_back(*tokenPtr);
+    }
+
+    return enclosedTokens;
 }
