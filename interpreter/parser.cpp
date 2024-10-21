@@ -195,7 +195,6 @@ std::shared_ptr<ast::FunctionDefNode> Parser::parseFuncDeclaration() {
     }
 
     expect(token::TokenType::CLOSE_PAREN);  // should be true because of the while loop
-    expect(token::TokenType::OPEN_BRACE);
 
     // get all tokens within the curly braces and create a parser for them
     std::vector<token::Token> functionTokens = extractEnclosedTokens(token::TokenType::OPEN_BRACE, token::TokenType::CLOSE_BRACE);
