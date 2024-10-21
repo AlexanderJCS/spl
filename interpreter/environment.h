@@ -35,7 +35,7 @@ namespace env {
     class Environment {
     public:
         Environment();
-        Environment(const Environment& parent);
+        Environment(Environment& parent);
 
         /**
          * Sets a variable in the environment
@@ -65,7 +65,7 @@ namespace env {
         std::string getType(const std::string& name) const;
 
         /**
-         * Checks if a variable is in the environment
+         * Checks if a variable is in the environment or any parent environments
          * @param name The name of the variable
          * @return True if the variable is in the environment, false otherwise
          */
@@ -79,7 +79,7 @@ namespace env {
 
     private:
         std::unordered_map<std::string, VariantType> variables;
-        const Environment* parent;  // may be nullptr
+        Environment* parent;  // may be nullptr
     };
 }
 

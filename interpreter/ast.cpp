@@ -39,8 +39,7 @@ ast::RootNode::RootNode(const std::vector<std::shared_ptr<ASTNode>> &children) {
 }
 
 
-env::VariantType ast::DeclarationNode::eval(env::Environment &env) const {
-    token::Token typeSpecifier = nodeToken;
+env::VariantType ast::DeclarationNode::eval(env::Environment& env) const {
     token::Token identifier = nodeChildren[0]->token();
     env::VariantType value = nodeChildren[1]->eval(env);
 

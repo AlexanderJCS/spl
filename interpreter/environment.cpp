@@ -5,14 +5,29 @@
 
 env::Environment::Environment() : parent(nullptr) {}
 
-env::Environment::Environment(const Environment& parent) : parent(&parent) {}
+env::Environment::Environment(Environment& parent) : parent(&parent) {}
 
 void env::Environment::set(const std::string& name, VariantType value) {
+    if (has(name) && !variables.count(name)) {
+        parent->set(name, std::move(value));
+        return;
+    }
+
     variables[name] = std::move(value);
 }
 
 bool env::Environment::has(const std::string& name) const {
-    return variables.find(name) != variables.end();
+    const Environment* current = this;
+
+    while (current != nullptr) {
+        if (current->variables.count(name)) {
+            return true;
+        }
+
+        current = current->parent;
+    }
+
+    return false;
 }
 
 env::VariantType env::Environment::get(const std::string& name) const {
@@ -63,6 +78,6 @@ const std::shared_ptr<ast::ASTNode>& types::Function::body() const {
     return functionBody;
 }
 
-bool types::Function::operator==(const types::Function &other) const {
+bool types::Function::operator==(const types::Function& other) const {
     return functionParameters == other.functionParameters && functionBody == other.functionBody;
 }
