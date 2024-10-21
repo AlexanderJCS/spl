@@ -57,12 +57,14 @@ env::VariantType ast::IfNode::eval(env::Environment& env) const {
         throw std::runtime_error("If statement must have 2 or 3 children");
     }
 
+
     env::VariantType condition = nodeChildren[0]->eval(env);
+    env::Environment newScope = env::Environment{env};
 
     if (std::get<bool>(condition)) {
-        nodeChildren[1]->eval(env);
+        nodeChildren[1]->eval(newScope);
     } else if (nodeChildren.size() == 3) {
-        nodeChildren[2]->eval(env);
+        nodeChildren[2]->eval(newScope);
     }
 
     return {};
