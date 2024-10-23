@@ -44,7 +44,7 @@ TEST(TokenizerTest, AlwaysTrue) {
             {token::TokenType::IF_STATEMENT, ""},
             {token::TokenType::ELIF_STATEMENT, ""},
             {token::TokenType::ELSE_STATEMENT, ""},
-            {token::TokenType::WHILE, ""}
+            {token::TokenType::WHILE, ""},
             {token::TokenType::BREAK, ""},
             {token::TokenType::CONTINUE, ""}
     };
