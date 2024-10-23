@@ -117,7 +117,10 @@ std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
             {"false", TokenType::LITERAL_BOOL},
             {"if", TokenType::IF_STATEMENT},
             {"elif", TokenType::ELIF_STATEMENT},
-            {"else", TokenType::ELSE_STATEMENT}
+            {"else", TokenType::ELSE_STATEMENT},
+            {"while", TokenType::WHILE},
+            {"continue", TokenType::CONTINUE},
+            {"break", TokenType::BREAK}
     };
 
     std::vector<Token> tokens;

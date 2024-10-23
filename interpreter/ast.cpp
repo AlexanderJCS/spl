@@ -204,7 +204,31 @@ env::VariantType ast::ControlFlowNode::eval(env::Environment& env) const {
     switch (nodeToken.type()) {
         case token::TokenType::RETURN:
             throw control::ReturnException(nodeChildren[0]->eval(env));
+        case token::TokenType::BREAK:
+            throw control::BreakException();
+        case token::TokenType::CONTINUE:
+            throw control::ContinueException();
         default:
             throw std::runtime_error("Unexpected control flow token");
     }
+}
+
+ast::WhileNode::WhileNode(const token::Token &token, std::shared_ptr<ASTNode> condition,
+                          std::shared_ptr<ASTNode> body) {
+    nodeToken = token;
+    nodeChildren = {std::move(condition), std::move(body)};
+}
+
+env::VariantType ast::WhileNode::eval(env::Environment &env) const {
+    while (std::get<bool>(nodeChildren[0]->eval(env))) {
+        try {
+            nodeChildren[1]->eval(env);
+        } catch (const control::ContinueException &) {
+            continue;
+        } catch (const control::BreakException &) {
+            break;
+        }
+    }
+
+    return {};
 }

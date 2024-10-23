@@ -5,7 +5,7 @@
 #include "../interpreter/tokenizer.h"
 
 TEST(TokenizerTest, AlwaysTrue) {
-    std::string input = "x ( { } ) 42 4.7 10e3 5. ; = \n \n \t funcCall(a, b) + - * / fun return , && || ! == true false if elif else";
+    std::string input = "x ( { } ) 42 4.7 10e3 5. ; = \n \n \t funcCall(a, b) + - * / fun return , && || ! == true false if elif else while break continue";
     token::Tokenizer tokenizer(input);
     std::vector<token::Token> tokens = tokenizer.getTokens();
 
@@ -43,7 +43,10 @@ TEST(TokenizerTest, AlwaysTrue) {
             {token::TokenType::LITERAL_BOOL, "false"},
             {token::TokenType::IF_STATEMENT, ""},
             {token::TokenType::ELIF_STATEMENT, ""},
-            {token::TokenType::ELSE_STATEMENT, ""}
+            {token::TokenType::ELSE_STATEMENT, ""},
+            {token::TokenType::WHILE, ""}
+            {token::TokenType::BREAK, ""},
+            {token::TokenType::CONTINUE, ""}
     };
 
     ASSERT_EQ(tokens.size(), expectedTokens.size());

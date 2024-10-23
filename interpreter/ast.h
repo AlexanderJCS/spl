@@ -91,6 +91,13 @@ namespace ast {
         env::VariantType eval(env::Environment& env) const override;
     };
 
+    class WhileNode : public ASTNode {
+    public:
+        explicit WhileNode(const token::Token& token, std::shared_ptr<ASTNode> condition, std::shared_ptr<ASTNode> body);
+
+        env::VariantType eval(env::Environment& env) const override;
+    };
+
     class ExpressionNode : public ASTNode {
     public:
         ExpressionNode() = default;

@@ -18,7 +18,15 @@ namespace control {
         env::VariantType returnValue;
     };
 
-    // todo: add "continue" and "break" exceptions
+    class BreakException : public std::exception {
+    public:
+        [[nodiscard]] const char* what() const noexcept override;
+    };
+
+    class ContinueException : public std::exception {
+    public:
+        [[nodiscard]] const char* what() const noexcept override;
+    };
 }
 
 #endif //SPL_CONTROL_FLOW_H

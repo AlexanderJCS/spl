@@ -96,13 +96,19 @@ private:
      * Parses a jump control flow statement (return, break, continue)
      * @return The root of the control flow tree
      */
-    std::shared_ptr<ast::ControlFlowNode> parseJump();
+    std::shared_ptr<ast::ControlFlowNode> parseControlFlow();
 
     /**
      * Parses an if statement.
      * @return The root of the if statement tree
      */
     std::shared_ptr<ast::IfNode> parseIf();
+
+    /**
+     * Parses a while loop.
+     * @return The root of the while loop tree
+     */
+    std::shared_ptr<ast::WhileNode> parseWhile();
 
     /**
      * Parses a function call. Assumes the current token is the function name/identifier.

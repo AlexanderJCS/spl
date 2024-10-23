@@ -39,7 +39,10 @@ namespace token {
         SEPARATOR,
         IF_STATEMENT,
         ELIF_STATEMENT,
-        ELSE_STATEMENT
+        ELSE_STATEMENT,
+        WHILE,
+        CONTINUE,
+        BREAK
     };
 
     /**

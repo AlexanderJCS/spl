@@ -10,3 +10,11 @@ const char* control::ReturnException::what() const noexcept {
 }
 
 control::ReturnException::ReturnException(env::VariantType value) : returnValue(std::move(value)) {}
+
+const char *control::BreakException::what() const noexcept {
+    return "Break statement";
+}
+
+const char *control::ContinueException::what() const noexcept {
+    return "Continue statement";
+}

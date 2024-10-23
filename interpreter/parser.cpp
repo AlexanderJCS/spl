@@ -76,8 +76,8 @@ std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
         std::shared_ptr<ast::ASTNode> functionDefNode = std::static_pointer_cast<ast::ASTNode>(functionDef);
 
         return functionDefNode;
-    } else if (currentToken().type() == token::TokenType::RETURN) {
-        std::shared_ptr<ast::ControlFlowNode> controlFlow = parseJump();
+    } else if (currentToken().type() == token::TokenType::RETURN || currentToken().type() == token::TokenType::BREAK || currentToken().type() == token::TokenType::CONTINUE) {
+        std::shared_ptr<ast::ControlFlowNode> controlFlow = parseControlFlow();
         std::shared_ptr<ast::ASTNode> controlFlowNode = std::static_pointer_cast<ast::ASTNode>(controlFlow);
 
         return controlFlowNode;
@@ -86,6 +86,11 @@ std::shared_ptr<ast::ASTNode> Parser::parseStatement() {
         std::shared_ptr<ast::ASTNode> ifStatementNode = std::static_pointer_cast<ast::ASTNode>(ifStatement);
 
         return ifStatementNode;
+    } else if (currentToken().type() == token::TokenType::WHILE) {
+        std::shared_ptr<ast::WhileNode> whileStatement = parseWhile();
+        std::shared_ptr<ast::ASTNode> whileStatementNode = std::static_pointer_cast<ast::ASTNode>(whileStatement);
+
+        return whileStatementNode;
     } else {
         throw std::runtime_error("Could not determine how to parse a statement from the current token");
     }
@@ -209,15 +214,19 @@ std::shared_ptr<ast::FunctionDefNode> Parser::parseFuncDeclaration() {
     });
 }
 
-std::shared_ptr<ast::ControlFlowNode> Parser::parseJump() {
+std::shared_ptr<ast::ControlFlowNode> Parser::parseControlFlow() {
     token::Token jumpToken = advance();
 
     switch (jumpToken.type()) {
-        case token::TokenType::RETURN: {
+        case token::TokenType::RETURN:{
             std::shared_ptr<ast::ExpressionNode> expression = parseExpression();
             std::shared_ptr<ast::ASTNode> expressionNode = std::static_pointer_cast<ast::ASTNode>(expression);
 
             return std::make_shared<ast::ControlFlowNode>(ast::ControlFlowNode{jumpToken, {expressionNode}});
+        }
+        case token::TokenType::BREAK:
+        case token::TokenType::CONTINUE: {
+            return std::make_shared<ast::ControlFlowNode>(ast::ControlFlowNode{jumpToken, {}});
         }
         default:
             throw std::runtime_error("Unexpected control flow token");
@@ -298,4 +307,20 @@ std::vector<token::Token> Parser::extractEnclosedTokens(token::TokenType start, 
     }
 
     return enclosedTokens;
+}
+
+std::shared_ptr<ast::WhileNode> Parser::parseWhile() {
+    token::Token whileToken = advance();  // skip the "while" keyword
+
+    std::vector<std::shared_ptr<token::Token>> whileConditionTokens = extractEnclosedTokensPtr(token::TokenType::OPEN_PAREN, token::TokenType::CLOSE_PAREN);
+    std::vector<token::Token> whileBodyTokens = extractEnclosedTokens(token::TokenType::OPEN_BRACE, token::TokenType::CLOSE_BRACE);
+
+    ShuntingYardParser whileConditionParser{whileConditionTokens};
+    Parser whileBodyParser{whileBodyTokens};
+
+    return std::make_shared<ast::WhileNode>(ast::WhileNode{
+        whileToken,
+        whileConditionParser.root(),
+        std::make_shared<ast::RootNode>(whileBodyParser.root())
+    });
 }
