@@ -70,6 +70,12 @@ std::shared_ptr<ast::ExpressionNode> ShuntingYardParser::parse() const {
             case token::TokenType::OPERATOR_BOOL_AND:
             case token::TokenType::OPERATOR_BOOL_OR:
             case token::TokenType::OPERATOR_UNARY_NOT:
+            case token::TokenType::OPERATOR_LESS:
+            case token::TokenType::OPERATOR_LESS_EQ:
+            case token::TokenType::OPERATOR_GREATER:
+            case token::TokenType::OPERATOR_GREATER_EQ:
+            case token::TokenType::OPERATOR_MOD:
+            case token::TokenType::OPERATOR_NOT_EQ:
                 while (!operatorStack.empty() &&  // stack is not empty
                        (operatorStack.top().precedence() > token.precedence() ||  // higher precedence
                        (operatorStack.top().precedence() == token.precedence() && token.associativity() == token::Associativity::LEFT))  // equal precedence if left associative

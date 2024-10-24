@@ -29,6 +29,12 @@ namespace token {
         OPERATOR_SUB,
         OPERATOR_MUL,
         OPERATOR_DIV,
+        OPERATOR_MOD,
+        OPERATOR_NOT_EQ,
+        OPERATOR_LESS,
+        OPERATOR_LESS_EQ,
+        OPERATOR_GREATER,
+        OPERATOR_GREATER_EQ,
         OPERATOR_BOOL_AND,
         OPERATOR_BOOL_OR,
         OPERATOR_UNARY_NOT,
@@ -55,27 +61,71 @@ namespace token {
     };
 
     const std::unordered_map<TokenType, int> operatorPrecedenceMap = {
-            {TokenType::OPERATOR_DEFINE,    1},
-            {TokenType::OPERATOR_BOOL_OR,   2},
-            {TokenType::OPERATOR_BOOL_AND,  3},
-            {TokenType::OPERATOR_EQ,        4},
-            {TokenType::OPERATOR_ADD,       5},
-            {TokenType::OPERATOR_SUB,       5},
-            {TokenType::OPERATOR_MUL,       6},
-            {TokenType::OPERATOR_DIV,       6},
-            {TokenType::OPERATOR_UNARY_NOT, 7}
+            {TokenType::OPERATOR_DEFINE,     1},   // Assignment has lowest precedence
+            {TokenType::OPERATOR_BOOL_OR,    2},   // Logical OR
+            {TokenType::OPERATOR_BOOL_AND,   3},   // Logical AND
+            {TokenType::OPERATOR_EQ,         4},   // Equality checks
+            {TokenType::OPERATOR_NOT_EQ,     4},
+            {TokenType::OPERATOR_LESS,       5},   // Relational (>, <, >=, <=)
+            {TokenType::OPERATOR_LESS_EQ,    5},
+            {TokenType::OPERATOR_GREATER,    5},
+            {TokenType::OPERATOR_GREATER_EQ, 5},
+            {TokenType::OPERATOR_ADD,        6},   // Addition/Subtraction
+            {TokenType::OPERATOR_SUB,        6},
+            {TokenType::OPERATOR_MUL,        7},   // Multiplication/Division/Modulus
+            {TokenType::OPERATOR_DIV,        7},
+            {TokenType::OPERATOR_MOD,        7},
+            {TokenType::OPERATOR_UNARY_NOT,  8}    // Unary NOT (higher precedence than relational and arithmetic)
     };
 
     const std::unordered_map<TokenType, Associativity> operatorAssociativityMap = {
-            {TokenType::OPERATOR_DEFINE,    Associativity::RIGHT},
-            {TokenType::OPERATOR_ADD,       Associativity::LEFT},
-            {TokenType::OPERATOR_SUB,       Associativity::LEFT},
-            {TokenType::OPERATOR_MUL,       Associativity::LEFT},
-            {TokenType::OPERATOR_DIV,       Associativity::LEFT},
-            {TokenType::OPERATOR_BOOL_AND,  Associativity::LEFT},
-            {TokenType::OPERATOR_BOOL_OR,   Associativity::LEFT},
-            {TokenType::OPERATOR_UNARY_NOT, Associativity::RIGHT},
-            {TokenType::OPERATOR_EQ,        Associativity::LEFT}
+            {TokenType::OPERATOR_DEFINE,     Associativity::RIGHT},
+            {TokenType::OPERATOR_ADD,        Associativity::LEFT},
+            {TokenType::OPERATOR_SUB,        Associativity::LEFT},
+            {TokenType::OPERATOR_MUL,        Associativity::LEFT},
+            {TokenType::OPERATOR_DIV,        Associativity::LEFT},
+            {TokenType::OPERATOR_BOOL_AND,   Associativity::LEFT},
+            {TokenType::OPERATOR_BOOL_OR,    Associativity::LEFT},
+            {TokenType::OPERATOR_UNARY_NOT,  Associativity::RIGHT},
+            {TokenType::OPERATOR_EQ,         Associativity::LEFT},
+            {TokenType::OPERATOR_NOT_EQ,     Associativity::LEFT},
+            {TokenType::OPERATOR_LESS,       Associativity::LEFT},
+            {TokenType::OPERATOR_LESS_EQ,    Associativity::LEFT},
+            {TokenType::OPERATOR_GREATER,    Associativity::LEFT},
+            {TokenType::OPERATOR_GREATER_EQ, Associativity::LEFT},
+            {TokenType::OPERATOR_MOD,        Associativity::LEFT}
+    };
+
+    const std::unordered_map<std::string, TokenType> simpleTokens = {
+            {"(", TokenType::OPEN_PAREN},
+            {")", TokenType::CLOSE_PAREN},
+            {"{", TokenType::OPEN_BRACE},
+            {"}", TokenType::CLOSE_BRACE},
+            {"=", TokenType::OPERATOR_DEFINE},
+            {"+", TokenType::OPERATOR_ADD},
+            {"-", TokenType::OPERATOR_SUB},
+            {"*", TokenType::OPERATOR_MUL},
+            {"/", TokenType::OPERATOR_DIV},
+            {",", TokenType::SEPARATOR},
+            {";", TokenType::SEMICOLON},
+            {"==", TokenType::OPERATOR_EQ},
+            {"!=", TokenType::OPERATOR_NOT_EQ},
+            {"&&", TokenType::OPERATOR_BOOL_AND},
+            {"||", TokenType::OPERATOR_BOOL_OR},
+            {"!", TokenType::OPERATOR_UNARY_NOT},
+            {"true", TokenType::LITERAL_BOOL},
+            {"false", TokenType::LITERAL_BOOL},
+            {"if", TokenType::IF_STATEMENT},
+            {"elif", TokenType::ELIF_STATEMENT},
+            {"else", TokenType::ELSE_STATEMENT},
+            {"while", TokenType::WHILE},
+            {"continue", TokenType::CONTINUE},
+            {"break", TokenType::BREAK},
+            {"%", TokenType::OPERATOR_MOD},
+            {"<", TokenType::OPERATOR_LESS},
+            {">", TokenType::OPERATOR_GREATER},
+            {"<=", TokenType::OPERATOR_LESS_EQ},
+            {">=", TokenType::OPERATOR_GREATER_EQ}
     };
 
     class Token {

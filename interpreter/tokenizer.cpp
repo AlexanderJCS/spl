@@ -96,33 +96,6 @@ void token::Tokenizer::processComplexToken(
 
 
 std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
-        // Map of simple tokens (single or multi-character operators)
-    std::unordered_map<std::string, TokenType> simpleTokens = {
-            {"(", TokenType::OPEN_PAREN},
-            {")", TokenType::CLOSE_PAREN},
-            {"{", TokenType::OPEN_BRACE},
-            {"}", TokenType::CLOSE_BRACE},
-            {"=", TokenType::OPERATOR_DEFINE},
-            {"+", TokenType::OPERATOR_ADD},
-            {"-", TokenType::OPERATOR_SUB},
-            {"*", TokenType::OPERATOR_MUL},
-            {"/", TokenType::OPERATOR_DIV},
-            {",", TokenType::SEPARATOR},
-            {";", TokenType::SEMICOLON},
-            {"==", TokenType::OPERATOR_EQ},
-            {"&&", TokenType::OPERATOR_BOOL_AND},
-            {"||", TokenType::OPERATOR_BOOL_OR},
-            {"!", TokenType::OPERATOR_UNARY_NOT},
-            {"true", TokenType::LITERAL_BOOL},
-            {"false", TokenType::LITERAL_BOOL},
-            {"if", TokenType::IF_STATEMENT},
-            {"elif", TokenType::ELIF_STATEMENT},
-            {"else", TokenType::ELSE_STATEMENT},
-            {"while", TokenType::WHILE},
-            {"continue", TokenType::CONTINUE},
-            {"break", TokenType::BREAK}
-    };
-
     std::vector<Token> tokens;
     std::string buffer;
     size_t line = 1;
@@ -160,7 +133,7 @@ std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
         bool nextBufferIsToken = i + 1 < input.size() && simpleTokens.count(buffer + input[i + 1]);
 
         if (simpleTokens.count(buffer) && !nextBufferIsToken) {
-            tokens.emplace_back(simpleTokens[buffer], buffer, line, col);
+            tokens.emplace_back(simpleTokens.at(buffer), buffer, line, col);
             buffer = "";
             continue;
         }

@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <utility>
 #include <memory>
+#include <cmath>
 
 const token::Token& ast::ASTNode::token() const {
     return nodeToken;
@@ -138,6 +139,28 @@ env::VariantType ast::ExpressionNode::eval(env::Environment& env) const {
             return applyOperation(left, right, std::logical_and<>{});
         case token::TokenType::OPERATOR_BOOL_OR:
             return applyOperation(left, right, std::logical_or<>{});
+        case token::TokenType::OPERATOR_LESS:
+            return applyOperation(left, right, std::less<>{});
+        case token::TokenType::OPERATOR_LESS_EQ:
+            return applyOperation(left, right, std::less_equal<>{});
+        case token::TokenType::OPERATOR_GREATER:
+            return applyOperation(left, right, std::greater<>{});
+        case token::TokenType::OPERATOR_GREATER_EQ:
+            return applyOperation(left, right, std::greater_equal<>{});
+        case token::TokenType::OPERATOR_MOD:
+            return applyOperation(left, right, [](auto l, auto r) -> env::VariantType {
+                if constexpr (std::is_integral_v<decltype(l)> && std::is_integral_v<decltype(r)>) {
+                    // Integer modulus
+                    return env::VariantType(std::modulus<>{}(l, r));
+                } else if constexpr (std::is_floating_point_v<decltype(l)> || std::is_floating_point_v<decltype(r)>) {
+                    // Floating-point modulus (using std::fmod)
+                    return env::VariantType(std::fmod(static_cast<float>(l), static_cast<float>(r)));
+                } else {
+                    throw std::runtime_error("Invalid types for modulus operation");
+                }
+            });
+        case token::TokenType::OPERATOR_NOT_EQ:
+            return applyOperation(left, right, std::not_equal_to<>{});
         default:
             throw std::runtime_error("Unexpected token when evaluating expression operator");
     }
