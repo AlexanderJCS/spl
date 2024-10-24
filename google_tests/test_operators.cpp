@@ -63,6 +63,9 @@ TEST(OperatorsTest, Equal) {
 
     test("3.5 == 3.5", true);
     test("3.5 == 3", false);
+
+    test("true == false", false);
+    test("true == true", true);
 }
 
 TEST(OperatorsTest, NotEqual) {
@@ -71,6 +74,9 @@ TEST(OperatorsTest, NotEqual) {
 
     test("3.5 != 3.5", false);
     test("3.5 != 3", true);
+
+    test("true != false", true);
+    test("true != true", false);
 }
 
 TEST(OperatorsTest, Modulus) {
