@@ -74,6 +74,13 @@ void token::Tokenizer::processComplexToken(
         tokens.emplace_back(TokenType::RETURN, buffer, line, column);
     } else if (std::isalpha(buffer[0])) {
         tokens.emplace_back(TokenType::IDENTIFIER, buffer, line, column);
+    } else if (buffer[0] == '"') {
+        if (buffer[buffer.length() - 1] != '"') {
+            throw std::runtime_error("String literal not closed: " + buffer);
+        }
+
+        std::string str = buffer.substr(1, buffer.length() - 2);
+        tokens.emplace_back(TokenType::LITERAL_STRING, str, line, column);
     } else {
         bool isInteger = true;
         for (char ch : buffer) {
@@ -116,10 +123,12 @@ std::vector<token::Token> token::Tokenizer::tokenize(const std::string& input) {
          * notify the Nobel Prize committee and recommend that you are awarded it immediately.
          */
 
-        // 1st condition: if the character is a space
-        // 2nd condition: if the character is moving from a complex token/identifier to a simple token
+        // 1st condition: the character is a space OR the character is moving from a complex token/identifier to a simple token
+        // 3rd condition: this is not an unclosed string literal (i.e., !(buffer[0] == '"' && buffer[buffer.length() - 1] != '"'))
         bool isSpace = std::isspace(ch);
-        if (isSpace || (!buffer.empty() && !simpleTokens.count(buffer) && simpleTokens.count(std::string(1, ch)))) {
+        bool complexToSimple = !buffer.empty() && !simpleTokens.count(buffer) && simpleTokens.count(std::string(1, ch));
+        bool notUnclosedString = !(buffer[0] == '"' && buffer[buffer.length() - 1] != '"');
+        if ((isSpace || complexToSimple) && notUnclosedString) {
             processComplexToken(buffer, tokens, line, col);
 
             if (isSpace) {

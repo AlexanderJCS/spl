@@ -23,6 +23,7 @@ namespace token {
         LITERAL_INT,
         LITERAL_BOOL,
         LITERAL_FLOAT,
+        LITERAL_STRING,
         SEMICOLON,
         OPERATOR_DEFINE,
         OPERATOR_ADD,

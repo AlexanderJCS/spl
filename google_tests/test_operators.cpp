@@ -16,6 +16,8 @@ void test(const std::string& input, const env::VariantType& expected) {
 TEST(OperatorsTest, Addition) {
     test("3 + 4", 7);
     test("3 + 4.5", 7.5f);
+
+    test(R"("hello " + "world")", "hello world");
 }
 
 TEST(OperatorsTest, Subtraction) {
@@ -27,6 +29,8 @@ TEST(OperatorsTest, Multiplication) {
     test("3 * 4", 12);
     test("3 * 4.5", 13.5f);
     test("3.5 * 4", 14.0f);
+
+    test(R"("hi " * 4)", "hi hi hi hi ");
 }
 
 TEST(OperatorsTest, Division) {
@@ -66,6 +70,9 @@ TEST(OperatorsTest, Equal) {
 
     test("true == false", false);
     test("true == true", true);
+
+    test(R"("a" == "b")", false);
+    test(R"("a" == "a")", true);
 }
 
 TEST(OperatorsTest, NotEqual) {
@@ -77,6 +84,9 @@ TEST(OperatorsTest, NotEqual) {
 
     test("true != false", true);
     test("true != true", false);
+
+    test(R"("a" != "b")", true);
+    test(R"("a" != "a")", false);
 }
 
 TEST(OperatorsTest, Modulus) {
@@ -92,6 +102,10 @@ TEST(OperatorsTest, Greater) {
     test("3 > 3.5", false);
     test("3.5 > 3", true);
     test("3.5 > 3.5", false);
+
+    test(R"("a" > "b")", false);
+    test(R"("a" > "a")", false);
+    test(R"("a" > "aa")", false);
 }
 
 TEST(OperatorsTest, GreaterEqual) {
@@ -102,6 +116,10 @@ TEST(OperatorsTest, GreaterEqual) {
     test("3 >= 3.5", false);
     test("3.5 >= 3", true);
     test("3.5 >= 3.5", true);
+
+    test(R"("a" >= "b")", false);
+    test(R"("a" >= "a")", true);
+    test(R"("a" >= "aa")", false);
 }
 
 TEST(OperatorsTest, Less) {
@@ -112,6 +130,10 @@ TEST(OperatorsTest, Less) {
     test("3 < 3.5", true);
     test("3.5 < 3", false);
     test("3.5 < 3.5", false);
+
+    test(R"("a" < "b")", true);
+    test(R"("a" < "a")", false);
+    test(R"("a" < "aa")", true);
 }
 
 TEST(OperatorsTest, LessEqual) {
@@ -122,6 +144,10 @@ TEST(OperatorsTest, LessEqual) {
     test("3 <= 3.5", true);
     test("3.5 <= 3", false);
     test("3.5 <= 3.5", true);
+
+    test(R"("a" <= "b")", true);
+    test(R"("a" <= "a")", true);
+    test(R"("a" <= "aa")", true);
 }
 
 TEST(OperatorsTest, Combined) {

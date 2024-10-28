@@ -85,6 +85,8 @@ env::VariantType ast::ExpressionNode::eval(env::Environment& env) const {
                 return std::stof(nodeToken.value());
             case token::TokenType::LITERAL_BOOL:
                 return nodeToken.value() == "true" ? true : false;
+            case token::TokenType::LITERAL_STRING:
+                return nodeToken.value();
             default:
                 throw std::runtime_error("Unexpected token when evaluating expression");
         }
@@ -126,26 +128,64 @@ env::VariantType ast::ExpressionNode::eval(env::Environment& env) const {
 
     switch (nodeToken.type()) {
         case token::TokenType::OPERATOR_ADD:
+            if (std::holds_alternative<std::string>(left) || std::holds_alternative<std::string>(right)) {
+                return std::get<std::string>(left) + std::get<std::string>(right);
+            }
+
             return applyOperation(left, right, std::plus<>{});
         case token::TokenType::OPERATOR_SUB:
             return applyOperation(left, right, std::minus<>{});
         case token::TokenType::OPERATOR_MUL:
+            if (std::holds_alternative<std::string>(left) && std::holds_alternative<int>(right)) {
+                std::string result;
+                for (int i = 0; i < std::get<int>(right); i++) {
+                    result += std::get<std::string>(left);
+                }
+                return result;
+            } else if (std::holds_alternative<int>(left) && std::holds_alternative<std::string>(right)) {
+                std::string result;
+                for (int i = 0; i < std::get<int>(left); i++) {
+                    result += std::get<std::string>(right);
+                }
+                return result;
+            }
+
             return applyOperation(left, right, std::multiplies<>{});
         case token::TokenType::OPERATOR_DIV:
             return applyOperation(left, right, std::divides<>{});
         case token::TokenType::OPERATOR_EQ:
+            if (std::holds_alternative<std::string>(left) || std::holds_alternative<std::string>(right)) {
+                return std::get<std::string>(left) == std::get<std::string>(right);
+            }
+
             return applyOperation(left, right, std::equal_to<>{});
         case token::TokenType::OPERATOR_BOOL_AND:
             return applyOperation(left, right, std::logical_and<>{});
         case token::TokenType::OPERATOR_BOOL_OR:
             return applyOperation(left, right, std::logical_or<>{});
         case token::TokenType::OPERATOR_LESS:
+            if (std::holds_alternative<std::string>(left) || std::holds_alternative<std::string>(right)) {
+                return std::get<std::string>(left) < std::get<std::string>(right);
+            }
+
             return applyOperation(left, right, std::less<>{});
         case token::TokenType::OPERATOR_LESS_EQ:
+            if (std::holds_alternative<std::string>(left) || std::holds_alternative<std::string>(right)) {
+                return std::get<std::string>(left) <= std::get<std::string>(right);
+            }
+
             return applyOperation(left, right, std::less_equal<>{});
         case token::TokenType::OPERATOR_GREATER:
+            if (std::holds_alternative<std::string>(left) || std::holds_alternative<std::string>(right)) {
+                return std::get<std::string>(left) > std::get<std::string>(right);
+            }
+
             return applyOperation(left, right, std::greater<>{});
         case token::TokenType::OPERATOR_GREATER_EQ:
+            if (std::holds_alternative<std::string>(left) || std::holds_alternative<std::string>(right)) {
+                return std::get<std::string>(left) >= std::get<std::string>(right);
+            }
+
             return applyOperation(left, right, std::greater_equal<>{});
         case token::TokenType::OPERATOR_MOD:
             return applyOperation(left, right, [](auto l, auto r) -> env::VariantType {
@@ -160,6 +200,10 @@ env::VariantType ast::ExpressionNode::eval(env::Environment& env) const {
                 }
             });
         case token::TokenType::OPERATOR_NOT_EQ:
+            if (std::holds_alternative<std::string>(left) || std::holds_alternative<std::string>(right)) {
+                return std::get<std::string>(left) != std::get<std::string>(right);
+            }
+
             return applyOperation(left, right, std::not_equal_to<>{});
         default:
             throw std::runtime_error("Unexpected token when evaluating expression operator");

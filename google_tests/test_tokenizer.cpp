@@ -5,7 +5,7 @@
 #include "../interpreter/tokenizer.h"
 
 TEST(TokenizerTest, Everything) {
-    std::string input = "x ( { } ) 42 4.7 10e3 5. ; = \n \n \t funcCall(a, b) + - * / fun return , && || ! == true false if elif else while break continue < > <= >= % !=";
+    std::string input = "x ( { } ) 42 4.7 10e3 5. ; = \n \n \t funcCall(a, b) + - * / fun return , && || ! == true false if elif else while break continue < > <= >= % != \"string\"";
     token::Tokenizer tokenizer(input);
     std::vector<token::Token> tokens = tokenizer.getTokens();
 
@@ -53,6 +53,7 @@ TEST(TokenizerTest, Everything) {
             {token::TokenType::OPERATOR_GREATER_EQ, ""},
             {token::TokenType::OPERATOR_MOD, ""},
             {token::TokenType::OPERATOR_NOT_EQ, ""},
+            {token::TokenType::LITERAL_STRING, "string"}
     };
 
     ASSERT_EQ(tokens.size(), expectedTokens.size());
